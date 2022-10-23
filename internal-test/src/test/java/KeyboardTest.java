@@ -143,4 +143,15 @@ public class KeyboardTest extends ApplicationTest
             Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("a"), isType(KeyEvent.KEY_RELEASED))
         ));
     }
+
+    @Test
+    public void testSingleNonTypableKey() throws ExecutionException, InterruptedException
+    {
+        push(KeyCode.ESCAPE);
+        MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
+            Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter(Character.toString(27)), isText(""), isType(KeyEvent.KEY_TYPED)),
+            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED))
+        ));
+    }
 }
