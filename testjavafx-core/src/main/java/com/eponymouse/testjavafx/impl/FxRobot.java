@@ -39,7 +39,8 @@ public class FxRobot implements FxRobotInterface
     public void push(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
-        order.forEach(actualRobot::keyPress);
-        order.reverse().forEach(actualRobot::keyRelease);
+        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
+        order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
+        FxThreadUtils.waitForFxEvents();
     }
 }

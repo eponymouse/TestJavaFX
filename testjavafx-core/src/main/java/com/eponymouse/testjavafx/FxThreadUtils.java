@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -73,6 +74,24 @@ public class FxThreadUtils
 
     private final static AtomicBoolean dummyAppLaunched = new AtomicBoolean(false);
     private final static CompletableFuture<Boolean> dummyAppRunning = new CompletableFuture<>();
+
+    public static void waitForFxEvents()
+    {
+        Semaphore s = new Semaphore(0);
+        for (int i = 0; i < 5; i++)
+        {
+            try
+            {
+                Platform.runLater(s::release);
+                s.acquire();
+                Thread.sleep(10);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public static class DummyApplication extends Application
     {

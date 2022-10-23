@@ -14,14 +14,17 @@ repositories {
 
 javafx {
     version = '11'
-    modules = [ 'javafx.base', 'javafx.graphics' ]
+    modules = [ 'javafx.base', 'javafx.controls', 'javafx.graphics' ]
     configuration = 'testImplementation'
 }
 
 dependencies {
-    testImplementation project(":testjavafx-core")
-    testImplementation project(":testjavafx-junit4")
-    testImplementation('junit:junit:4.13.2')
+    testImplementation project(':testjavafx-core')
+    testImplementation project(':testjavafx-junit4')
+    testImplementation 'com.google.guava:guava:31.1-jre'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    
 }
 
 test {
