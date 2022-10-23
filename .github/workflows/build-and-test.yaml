@@ -33,6 +33,7 @@ jobs:
         with:
           arguments: build --info --stacktrace --no-daemon
       - name: Stop recording
+        if: always()
         run: |
           killall -SIGINT ffmpeg
           sleep 5
