@@ -1,0 +1,52 @@
+name: Build and Test
+on: [push,pull_request]
+jobs:
+  Ubuntu-Build-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+      - name: Load .env file
+        uses: xom9ikk/dotenv@eff1dce037c4c0143cc4180a810511024c2560c0        
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.java_version }}
+          distribution: 'temurin'
+          java-package: jdk
+          architecture: x64
+          cache: gradle
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install xvfb ffmpeg icewm
+      - name: Start Xvfb and recording
+        run: |
+          Xvfb :42 -screen 0 1920x1200x24 &
+          sleep 5
+          DISPLAY=:42.0 icewm &
+          ffmpeg -nostdin -y -video_size 1920x1200 -framerate 8 -f x11grab -i :42.0 -codec:v libx264rgb -preset ultrafast recording.mp4 > ffmpeg.log 2>&1 &
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@859c33240bd026ce8d5f711f5adcc65c2f8eafc1
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
+        with:
+          arguments: build --info --stacktrace --no-daemon
+      - name: Stop recording
+        run: |
+          killall -SIGINT ffmpeg
+          sleep 5
+      - name: Archive video
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: screen-recordings
+          path: |
+            **/*.mp4
+      - name: Archive any heap dumps
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+           name: heap-dumps
+           path: |
+              **/*.hprof
