@@ -1,3 +1,5 @@
+import java.time.Duration
+
 plugins {
     id 'java-library'
     id 'org.openjfx.javafxplugin' version '0.0.13'
@@ -31,4 +33,8 @@ test {
         // Don't want inner classes to be scanned:
         excludeTestsMatching "*\$*"
     }
+
+    forkEvery = 1
+    maxParallelForks = 1
+    timeout = Duration.ofMinutes(10)
 }
