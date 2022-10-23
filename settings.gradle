@@ -1,0 +1,5 @@
+rootProject.name = 'TestJavaFX'
+include 'testjavafx-core'
+include 'testjavafx-junit4'
+include 'internal-test'
+
