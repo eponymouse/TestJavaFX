@@ -149,9 +149,9 @@ public class KeyboardTest extends ApplicationTest
     {
         push(KeyCode.ESCAPE);
         MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
-            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
+            Matchers.allOf(isKey(KeyCode.ESCAPE), Matchers.anyOf(isCharacter("\0"), isCharacter("")), isText(""), isType(KeyEvent.KEY_PRESSED)),
             Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter(Character.toString(27)), isText(""), isType(KeyEvent.KEY_TYPED)),
-            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED))
+            Matchers.allOf(isKey(KeyCode.ESCAPE), Matchers.anyOf(isCharacter("\0"), isCharacter("")), isText(""), isType(KeyEvent.KEY_RELEASED))
         ));
     }
 }
