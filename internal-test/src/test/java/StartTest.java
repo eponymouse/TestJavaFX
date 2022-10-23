@@ -23,17 +23,21 @@ public class StartTest extends ApplicationTest
 {
     private final AtomicInteger startCount = new AtomicInteger(0);
     private final AtomicInteger stopCount = new AtomicInteger(0);
+    private static final AtomicInteger sharedStartCount = new AtomicInteger(0);
+    private static final AtomicInteger sharedStopCount = new AtomicInteger(0);
     
     @Override
     public void start(Stage primaryStage)
     {
         startCount.incrementAndGet();
+        sharedStartCount.incrementAndGet();
     }
 
     @Override
     public void stop()
     {
         stopCount.incrementAndGet();
+        sharedStopCount.incrementAndGet();
     }
 
     @Test
@@ -41,14 +45,21 @@ public class StartTest extends ApplicationTest
     {
         assertEquals(1, startCount.get());
         assertEquals(0, stopCount.get());
+        assertEquals(1, sharedStartCount.get());
+        assertEquals(0, sharedStopCount.get());
     }
 
     @Test
     public void test2()
     {
-        // Count should still be one as we should be the same instance and only started once:
+        // Count should still be one as we should be a new instance and only started once:
         assertEquals(1, startCount.get());
         // We should not have been stopped:
         assertEquals(0, stopCount.get());
+
+        // Count should be two as two instances will have been started:
+        assertEquals(2, sharedStartCount.get());
+        // We should have been stopped after test1:
+        assertEquals(1, sharedStopCount.get());
     }
 }
