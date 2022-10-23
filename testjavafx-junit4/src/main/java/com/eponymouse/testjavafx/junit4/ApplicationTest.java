@@ -35,7 +35,9 @@ public abstract class ApplicationTest extends FxRobot
         FxThreadUtils.syncFx(this::stop);
     }
 
-    public abstract void start(Stage primaryStage);
+    public void start(Stage primaryStage)
+    {
+    }
     
     public void stop()
     {

@@ -30,4 +30,10 @@ public class JUnitApplication extends Application
     {
         userApplication.start(primaryStage);
     }
+
+    @Override
+    public void stop() throws Exception
+    {
+        userApplication.stop();
+    }
 }
