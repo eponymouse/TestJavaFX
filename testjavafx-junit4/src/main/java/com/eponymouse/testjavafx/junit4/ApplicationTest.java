@@ -14,7 +14,7 @@
 package com.eponymouse.testjavafx.junit4;
 
 import com.eponymouse.testjavafx.FxThreadUtils;
-import com.eponymouse.testjavafx.impl.FxRobot;
+import com.eponymouse.testjavafx.FxRobot;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public abstract class ApplicationTest extends FxRobot
         listWindows().forEach(w -> FxThreadUtils.syncFx(w::hide));
     }
 
-    public void start(Stage primaryStage)
+    public void start(Stage primaryStage) throws Exception
     {
     }
     
