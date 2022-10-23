@@ -144,13 +144,32 @@ public class FxThreadUtils
         return fxExecutor.submit(fxTask);
     }
 
-    public static <T> T syncFx(Callable<T> fxTask) throws ExecutionException, InterruptedException
+    public static <T> T syncFx(Callable<T> fxTask)
     {
-        return fxExecutor.submit(fxTask).get();
+        try
+        {
+            if (Platform.isFxApplicationThread())
+                return fxTask.call();
+            return fxExecutor.submit(fxTask).get();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void syncFx(Runnable fxTask) throws ExecutionException, InterruptedException
+    public static void syncFx(Runnable fxTask)
     {
-        fxExecutor.submit(fxTask).get();
+        try
+        {
+            if (Platform.isFxApplicationThread())
+                fxTask.run();
+            else
+                fxExecutor.submit(fxTask).get();
+        }
+        catch (ExecutionException | InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -13,7 +13,11 @@
  */
 package com.eponymouse.testjavafx;
 
+import javafx.stage.Window;
+
+import java.util.List;
+
 public interface FxRobotInterface extends FXRobotInterfaceKeyboard 
 {
-    
+    public List<Window> listWindows();
 }

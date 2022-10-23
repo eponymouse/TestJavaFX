@@ -31,8 +31,9 @@ public abstract class ApplicationTest extends FxRobot
 
     @After
     public final void internalAfter() throws Exception {
-        // TODO release keys and mouse buttons, cleanup windows
+        // TODO release keys and mouse buttons
         FxThreadUtils.syncFx(this::stop);
+        listWindows().forEach(w -> FxThreadUtils.syncFx(w::hide));
     }
 
     public void start(Stage primaryStage)

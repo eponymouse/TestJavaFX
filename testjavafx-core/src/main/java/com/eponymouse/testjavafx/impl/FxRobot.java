@@ -18,22 +18,14 @@ import com.eponymouse.testjavafx.FxThreadUtils;
 import com.google.common.collect.ImmutableList;
 import javafx.scene.input.KeyCode;
 import javafx.scene.robot.Robot;
+import javafx.stage.Window;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class FxRobot implements FxRobotInterface
 {
-    private final Robot actualRobot;
-    {
-        try
-        {
-            actualRobot = FxThreadUtils.syncFx(Robot::new);
-        }
-        catch (ExecutionException | InterruptedException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
+    private final Robot actualRobot = FxThreadUtils.syncFx(Robot::new);
 
     @Override
     public void push(KeyCode... keyCodes)
@@ -42,5 +34,11 @@ public class FxRobot implements FxRobotInterface
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
         order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
         FxThreadUtils.waitForFxEvents();
+    }
+    
+    @Override
+    public List<Window> listWindows()
+    {
+        return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
     }
 }
