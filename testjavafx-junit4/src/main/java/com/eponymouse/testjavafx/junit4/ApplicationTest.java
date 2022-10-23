@@ -15,6 +15,7 @@ package com.eponymouse.testjavafx.junit4;
 
 import com.eponymouse.testjavafx.FxThreadUtils;
 import com.eponymouse.testjavafx.FxRobot;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,7 @@ public abstract class ApplicationTest extends FxRobot
     @Before
     public final void internalBefore() throws Exception {
         FxThreadUtils.syncFx(() -> {
+            Platform.setImplicitExit(false);
             new JUnitApplication(this).start(new Stage());
             return null;
         });
