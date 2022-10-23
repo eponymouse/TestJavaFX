@@ -33,7 +33,7 @@ jobs:
         env:
           DISPLAY: ":42.0"
         with:
-          arguments: build --info --stacktrace --no-daemon
+          arguments: build --info --stacktrace --no-daemon --scan
       - name: Stop recording
         if: always()
         run: |
