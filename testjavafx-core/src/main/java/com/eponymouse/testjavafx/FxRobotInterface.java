@@ -13,11 +13,23 @@
  */
 package com.eponymouse.testjavafx;
 
+import com.eponymouse.testjavafx.node.NodeQuery;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.stage.Window;
 
 import java.util.List;
 
-public interface FxRobotInterface extends FXRobotInterfaceKeyboard 
+public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>
 {
     public List<Window> listWindows();
+
+    public NodeQuery lookup(String query);
+
+    public Point2D point(Node node);
+
+    public default Point2D point(String query)
+    {
+        return point(lookup(query).queryWithRetry());
+    }
 }

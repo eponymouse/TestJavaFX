@@ -15,8 +15,13 @@ package com.eponymouse.testjavafx;
 
 import com.eponymouse.testjavafx.FxRobotInterface;
 import com.eponymouse.testjavafx.FxThreadUtils;
+import com.eponymouse.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import javafx.stage.Window;
 
@@ -65,5 +70,64 @@ public class FxRobot implements FxRobotInterface
     public List<Window> listWindows()
     {
         return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
+    }
+
+    private Window focusedWindow()
+    {
+        return FxThreadUtils.syncFx(() -> Window.getWindows().stream().filter(Window::isFocused).findFirst().orElse(null));
+    }
+
+    @Override
+    public NodeQuery lookup(String query)
+    {
+        Node root = FxThreadUtils.syncFx(() -> focusedWindow().getScene().getRoot());
+        return from(root).lookup(query);
+    }
+
+    public NodeQuery from(Node... roots)
+    {
+        ImmutableList<Node> allRoots = ImmutableList.copyOf(roots);
+        return new NodeQueryImpl(allRoots);
+    }
+
+    @Override
+    public FxRobotInterface clickOn(String query, MouseButton... mouseButtons)
+    {
+        Node node = lookup(query).queryWithRetry();
+        clickOn(FxThreadUtils.syncFx(() -> node.localToScreen(new Point2D(node.getBoundsInLocal().getCenterX(), node.getBoundsInLocal().getCenterY()))), mouseButtons);
+        return this;
+    }
+
+    @Override
+    public FxRobotInterface clickOn(MouseButton... mouseButtons)
+    {
+        MouseButton[] actualButtons = mouseButtons.length == 0 ? new MouseButton[] {MouseButton.PRIMARY} : mouseButtons;
+        FxThreadUtils.syncFx(() -> actualRobot.mouseClick(actualButtons));
+        FxThreadUtils.waitForFxEvents();
+        return this;
+    }
+
+    @Override
+    public FxRobotInterface moveTo(Point2D screenPosition)
+    {
+        // TODO move gradually
+        FxThreadUtils.syncFx(() -> actualRobot.mouseMove(screenPosition));
+        FxThreadUtils.waitForFxEvents();
+        return this;
+    }
+
+    @Override
+    public FxRobotInterface moveTo(String query)
+    {
+        return moveTo(point(query));
+    }
+
+    @Override
+    public Point2D point(Node node)
+    {
+        return FxThreadUtils.syncFx(() -> {
+            Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
+            return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());
+        });
     }
 }
