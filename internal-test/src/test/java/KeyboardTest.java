@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class KeyboardTest extends ApplicationTest
 {
@@ -61,6 +62,11 @@ public class KeyboardTest extends ApplicationTest
         return this.keyEvents.toArray(KeyEvent[]::new);
     }
     
+    private static String elaborate(String s)
+    {
+        return "\"" + s + "\" [" + s.codePoints().mapToObj(Integer::toString).collect(Collectors.joining(", ")) + "]";
+    }
+    
     public static Matcher<KeyEvent> isKey(KeyCode keyCode)
     {
         return new CustomTypeSafeMatcher<KeyEvent>("Has key " + keyCode)
@@ -81,7 +87,7 @@ public class KeyboardTest extends ApplicationTest
 
     public static Matcher<KeyEvent> isText(String text)
     {
-        return new CustomTypeSafeMatcher<KeyEvent>("Has text " + text)
+        return new CustomTypeSafeMatcher<KeyEvent>("Has text " + elaborate(text))
         {
             @Override
             public boolean matchesSafely(KeyEvent actual)
@@ -92,14 +98,14 @@ public class KeyboardTest extends ApplicationTest
             @Override
             protected void describeMismatchSafely(KeyEvent item, Description mismatchDescription)
             {
-                mismatchDescription.appendText("had text ").appendValue(item.getText());
+                mismatchDescription.appendText("had text " + elaborate(item.getText()));
             }
         };
     }
 
     public static Matcher<KeyEvent> isCharacter(String character)
     {
-        return new CustomTypeSafeMatcher<KeyEvent>("Has character " + character)
+        return new CustomTypeSafeMatcher<KeyEvent>("Has character " + elaborate(character))
         {
             @Override
             public boolean matchesSafely(KeyEvent actual)
@@ -110,7 +116,7 @@ public class KeyboardTest extends ApplicationTest
             @Override
             protected void describeMismatchSafely(KeyEvent item, Description mismatchDescription)
             {
-                mismatchDescription.appendText("had character ").appendValue(item.getCharacter());
+                mismatchDescription.appendText("had character " + elaborate(item.getCharacter()));
             }
         };
     }
@@ -134,7 +140,7 @@ public class KeyboardTest extends ApplicationTest
     }
 
     @Test
-    public void testSingleKey() throws ExecutionException, InterruptedException
+    public void testSingleKey()
     {
         push(KeyCode.A);
         MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
@@ -145,13 +151,13 @@ public class KeyboardTest extends ApplicationTest
     }
 
     @Test
-    public void testSingleNonTypableKey() throws ExecutionException, InterruptedException
+    public void testSingleNonTypableKey()
     {
         push(KeyCode.ESCAPE);
         MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
-            Matchers.allOf(isKey(KeyCode.ESCAPE), Matchers.anyOf(isCharacter("\0"), isCharacter("")), isText(""), isType(KeyEvent.KEY_PRESSED)),
+            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
             Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter(Character.toString(27)), isText(""), isType(KeyEvent.KEY_TYPED)),
-            Matchers.allOf(isKey(KeyCode.ESCAPE), Matchers.anyOf(isCharacter("\0"), isCharacter("")), isText(""), isType(KeyEvent.KEY_RELEASED))
+            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED))
         ));
     }
 }
