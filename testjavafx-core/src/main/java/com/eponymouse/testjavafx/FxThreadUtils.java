@@ -23,7 +23,6 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
@@ -75,6 +74,14 @@ public class FxThreadUtils
     private final static AtomicBoolean dummyAppLaunched = new AtomicBoolean(false);
     private final static CompletableFuture<Boolean> dummyAppRunning = new CompletableFuture<>();
 
+    /**
+     * Waits for the FX events thread to look idle.
+     * 
+     * (This is done by running a task on it five times, waiting 15ms between each attempt.)
+     * 
+     * This can be safely called on the FX thread, but it does nothing in that case, that is
+     * it effectively assumes that the FX thread is free by definition.
+     */
     public static void waitForFxEvents()
     {
         if (Platform.isFxApplicationThread())
@@ -131,7 +138,9 @@ public class FxThreadUtils
 
     /**
      * Queues the callable to run on the FX thread, but does not wait for it to execute.
-     * You can wait for the result using the returned future.
+     * You can wait for the result using the returned future.  This is safe to call from
+     * any thread, including the FX thread, although if you wait for the task immediately
+     * on the FX thread then you will get a deadlock because you're blocking the thread.
      * @param fxTask
      * @return
      * @param <T>
