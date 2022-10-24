@@ -49,15 +49,18 @@ public class KeyboardTest extends ApplicationTest
         this.stage.getScene().addEventFilter(KeyEvent.ANY, e -> {
             synchronized (this)
             {
+                System.out.println("Key event: " + e);
                 keyEvents.add(e);
             }
         });
         this.stage.show();
+        System.out.println("Started");
     }
     
     public synchronized void stop()
     {
         keyEvents.clear();
+        System.out.println("Stopped");
     }
     
     public synchronized KeyEvent[] getKeyEvents()
