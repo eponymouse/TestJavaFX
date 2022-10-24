@@ -1,6 +1,6 @@
 /*
  * TestJavaFX: Testing for JavaFX applications
- * Copyright (c) Neil Brown, 2022.
+ * Copyright (c) TestFX contributors 2013-2019 and Neil Brown, 2022.
  *
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
  * European Commission - subsequent versions of the EUPL (the "Licence");
@@ -13,14 +13,17 @@
  */
 package com.eponymouse.testjavafx;
 
-import com.eponymouse.testjavafx.FxRobotInterface;
-import com.eponymouse.testjavafx.FxThreadUtils;
 import com.eponymouse.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
+import javafx.event.Event;
+import javafx.event.EventTarget;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import javafx.stage.Window;
@@ -28,7 +31,7 @@ import javafx.stage.Window;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
 
 public class FxRobot implements FxRobotInterface
 {
@@ -66,6 +69,21 @@ public class FxRobot implements FxRobotInterface
         return this;
     }
 
+    // Taken from TestFX:
+    @Override
+    public FxRobotInterface write(String text, int millisecondDelay)
+    {
+        Window w = focusedWindow();
+        Scene scene = w.getScene();
+        text.chars().forEach(c -> {
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, KeyCode.UNDEFINED, "")));
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, KeyCode.UNDEFINED, "")));
+            sleep(millisecondDelay);
+        });
+        return this;
+    }
+
     public FxRobotInterface sleep(int millisecondDelay)
     {
         try
@@ -76,6 +94,44 @@ public class FxRobot implements FxRobotInterface
         {
         }
         return this;
+    }
+
+    // Taken from TestFX:
+    private KeyEvent createKeyEvent(EventType<KeyEvent> eventType, KeyCode keyCode, String character) {
+        boolean pressed = eventType == KeyEvent.KEY_PRESSED;
+        boolean isShiftDown = false;
+        boolean isControlDown = false;
+        boolean isAltDown = false;
+        boolean isMetaDown = false;
+        if (keyCode == KeyCode.SHIFT) {
+            isShiftDown = pressed;
+        }
+        if (keyCode == KeyCode.CONTROL) {
+            isControlDown = pressed;
+        }
+        if (keyCode == KeyCode.ALT) {
+            isAltDown = pressed;
+        }
+        if (keyCode == KeyCode.META) {
+            isMetaDown = pressed;
+        }
+
+        boolean typed = eventType == KeyEvent.KEY_TYPED;
+        String keyChar = typed ? character : KeyEvent.CHAR_UNDEFINED;
+        String keyText = typed ? "" : keyCode.getName();
+        return new KeyEvent(eventType, keyChar, keyText, keyCode, isShiftDown, isControlDown, isAltDown, isMetaDown);
+    }
+    
+    // Taken from TestFX:
+    private EventTarget getEventTarget(Scene scene) {
+        return scene.getFocusOwner() != null ? scene.getFocusOwner() : scene;
+    }
+    
+        
+    @Override
+    public Window targetWindow()
+    {
+        return focusedWindow();
     }
 
     @Override
@@ -94,6 +150,12 @@ public class FxRobot implements FxRobotInterface
     {
         Node root = FxThreadUtils.syncFx(() -> focusedWindow().getScene().getRoot());
         return from(root).lookup(query);
+    }
+
+    @Override
+    public NodeQuery lookup(Predicate<Node> nodePredicate)
+    {
+        return FxThreadUtils.syncFx(() -> new NodeQueryImpl(ImmutableList.of(focusedWindow().getScene().getRoot())).lookup(nodePredicate));
     }
 
     public NodeQuery from(Node... roots)

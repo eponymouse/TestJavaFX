@@ -19,12 +19,21 @@ import javafx.scene.Node;
 import javafx.stage.Window;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>
 {
+    FxRobotInterface sleep(int milliseconds);
+    
     public List<Window> listWindows();
+    
+    public Window targetWindow();
 
     public NodeQuery lookup(String query);
+
+    public NodeQuery lookup(Predicate<Node> nodePredicate);
+
+    public NodeQuery from(Node... useAsRoots);
 
     public Point2D point(Node node);
 

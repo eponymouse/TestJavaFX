@@ -36,4 +36,16 @@ public interface FXRobotInterfaceKeyboard<T extends FXRobotInterfaceKeyboard<T>>
      * all keys held down by previously calling press.
      */
     public T release(KeyCode... keyCodes);
+
+    public default T write(char c)
+    {
+        return write(Character.toString(c));
+    }
+
+    public default T write(String text)
+    {
+        return write(text, 0);
+    }
+
+    public T write(String text, int millisecondDelay);
 }
