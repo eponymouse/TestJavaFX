@@ -35,6 +35,8 @@ public abstract class ApplicationTest extends FxRobot
     public final void internalAfter() throws Exception {
         // TODO release mouse buttons
         FxThreadUtils.syncFx(() -> release());
+        // Let all the release events come through before stopping:
+        sleep(1000);
         FxThreadUtils.syncFx(this::stop);
         listWindows().forEach(w -> FxThreadUtils.syncFx(w::hide));
     }
