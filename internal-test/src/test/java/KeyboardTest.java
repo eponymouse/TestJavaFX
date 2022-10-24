@@ -156,8 +156,34 @@ public class KeyboardTest extends ApplicationTest
         push(KeyCode.ESCAPE);
         MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
             Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_PRESSED)),
-            Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter(Character.toString(27)), isText(""), isType(KeyEvent.KEY_TYPED)),
+            Matchers.allOf(isKey(KeyCode.UNDEFINED), Matchers.anyOf(isCharacter(""), isCharacter(Character.toString(27))), isText(""), isType(KeyEvent.KEY_TYPED)),
             Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_RELEASED))
+        ));
+    }
+
+    @Test
+    public void testMultipleKeys1()
+    {
+        push(KeyCode.SHIFT, KeyCode.A);
+        MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+                Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("A"), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter("A"), isText(""), isType(KeyEvent.KEY_TYPED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("A"), isType(KeyEvent.KEY_RELEASED)),
+                Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED))
+        ));
+    }
+
+    @Test
+    public void testMultipleKeys2()
+    {
+        push(KeyCode.A, KeyCode.SHIFT);
+        MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("a"), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter("a"), isText(""), isType(KeyEvent.KEY_TYPED)),
+                Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("a"), isType(KeyEvent.KEY_RELEASED))
         ));
     }
 }
