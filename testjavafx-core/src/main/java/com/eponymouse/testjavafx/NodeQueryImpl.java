@@ -10,13 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 class NodeQueryImpl implements NodeQuery
 {
-    private final ImmutableList<Node> allRoots;
+    // Will only be run on FX thread:
+    private final Supplier<ImmutableList<Node>> allRoots;
 
-    NodeQueryImpl(ImmutableList<Node> allRoots)
+    NodeQueryImpl(Supplier<ImmutableList<Node>> allRoots)
     {
         this.allRoots = allRoots;
     }
@@ -24,13 +26,13 @@ class NodeQueryImpl implements NodeQuery
     @Override
     public NodeQuery lookup(String query)
     {
-        return FxThreadUtils.syncFx(() -> new NodeQueryImpl(allRoots.stream().flatMap(n -> n.lookupAll(query).stream()).collect(ImmutableList.toImmutableList())));
+        return new NodeQueryImpl(() -> allRoots.get().stream().flatMap(n -> n.lookupAll(query).stream()).collect(ImmutableList.toImmutableList()));
     }
 
     @Override
     public NodeQuery lookup(Predicate<Node> nodePredicate)
     {
-        return FxThreadUtils.syncFx(() -> new NodeQueryImpl(allRoots.stream().flatMap(n -> applyPredicateThoroughly(n, nodePredicate)).collect(ImmutableList.toImmutableList())));
+        return new NodeQueryImpl(() -> allRoots.get().stream().flatMap(n -> applyPredicateThoroughly(n, nodePredicate)).collect(ImmutableList.toImmutableList()));
     }
 
     private Stream<Node> applyPredicateThoroughly(Node n, Predicate<Node> nodePredicate)
@@ -50,14 +52,19 @@ class NodeQueryImpl implements NodeQuery
     @Override
     public <T extends Node> T query()
     {
-        return FxThreadUtils.syncFx(() -> (T)allRoots.get(0));
+        return FxThreadUtils.syncFx(() -> {
+            ImmutableList<Node> roots = allRoots.get();
+            return roots.isEmpty() ? null : (T)roots.get(0);
+        });
     }
 
     @Override
     public <T extends Node> Set<T> queryAll()
     {
-        Set<T> s = Sets.newIdentityHashSet();
-        s.addAll((List)allRoots);
-        return Collections.unmodifiableSet(s);
+        return FxThreadUtils.syncFx(() -> {
+            Set<T> s = Sets.newIdentityHashSet();
+            s.addAll((List) allRoots.get());
+            return Collections.unmodifiableSet(s);
+        });
     }
 }

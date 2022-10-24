@@ -12,6 +12,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.css.Styleable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -20,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -30,19 +34,33 @@ public class NodeQueryTest extends ApplicationTest
 {
     private VBox center;
     private VBox bottom;
+    private Timeline timeline;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        Button goldenButton = new Button("X");
         // A border pane with two vboxes each with an hbox, each with several buttons:
         primaryStage.setScene(new Scene(new BorderPane(
             center = makeVBox(),
             makeVBox(),
-            null,
+            goldenButton,
             bottom = makeVBox(),
             null
         )));
         primaryStage.show();
+        timeline = new Timeline(
+            new KeyFrame(Duration.seconds(1), e -> {goldenButton.getStyleClass().clear();}),
+            new KeyFrame(Duration.seconds(2), e -> {goldenButton.getStyleClass().add("golden");})
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    @Override
+    public void stop()
+    {
+        timeline.stop();
     }
 
     private VBox makeVBox()
@@ -82,5 +100,15 @@ public class NodeQueryTest extends ApplicationTest
     public void someButtons2()
     {
         MatcherAssert.assertThat(from(center, bottom).lookup(".but-2x3").queryAll(), Matchers.hasSize(2));
+    }
+    
+    @Test
+    public void golden()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            MatcherAssert.assertThat("Loop " + i, lookup(".golden").queryWithRetry(), Matchers.notNullValue());
+            sleep(1000);
+        }
     }
 }

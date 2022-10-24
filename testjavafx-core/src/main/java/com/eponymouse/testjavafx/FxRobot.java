@@ -155,13 +155,13 @@ public class FxRobot implements FxRobotInterface
     @Override
     public NodeQuery lookup(Predicate<Node> nodePredicate)
     {
-        return FxThreadUtils.syncFx(() -> new NodeQueryImpl(ImmutableList.of(focusedWindow().getScene().getRoot())).lookup(nodePredicate));
+        return new NodeQueryImpl(() -> ImmutableList.of(focusedWindow().getScene().getRoot())).lookup(nodePredicate);
     }
 
     public NodeQuery from(Node... roots)
     {
         ImmutableList<Node> allRoots = ImmutableList.copyOf(roots);
-        return new NodeQueryImpl(allRoots);
+        return new NodeQueryImpl(() -> allRoots);
     }
 
     @Override
