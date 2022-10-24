@@ -182,9 +182,9 @@ public class KeyboardTest extends ApplicationTest
         push(KeyCode.SHIFT, KeyCode.A);
         MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
                 Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_PRESSED)),
-                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("A"), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), Matchers.anyOf(isText("A"), isText("a")), isType(KeyEvent.KEY_PRESSED)),
                 Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter("A"), isText(""), isType(KeyEvent.KEY_TYPED)),
-                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("A"), isType(KeyEvent.KEY_RELEASED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), Matchers.anyOf(isText("A"), isText("a")), isType(KeyEvent.KEY_RELEASED)),
                 Matchers.allOf(isKey(KeyCode.SHIFT), isCharacter("\0"), isText(""), isType(KeyEvent.KEY_RELEASED))
         ));
     }
