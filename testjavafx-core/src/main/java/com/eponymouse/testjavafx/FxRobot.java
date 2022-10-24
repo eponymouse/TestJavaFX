@@ -35,7 +35,23 @@ public class FxRobot implements FxRobotInterface
         order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
         FxThreadUtils.waitForFxEvents();
     }
-    
+
+    @Override
+    public void press(KeyCode... keyCodes)
+    {
+        ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
+        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
+        FxThreadUtils.waitForFxEvents();
+    }
+
+    @Override
+    public void release(KeyCode... keyCodes)
+    {
+        ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
+        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
+        FxThreadUtils.waitForFxEvents();
+    }
+
     @Override
     public List<Window> listWindows()
     {

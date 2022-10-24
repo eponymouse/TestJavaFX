@@ -17,5 +17,22 @@ import javafx.scene.input.KeyCode;
 
 public interface FXRobotInterfaceKeyboard
 {
+    /**
+     * Presses all the keys in order, then releases
+     * them all in reverse order, then waits for
+     * the FX events thread.
+     */
     public void push(KeyCode... keyCodes);
+
+    /**
+     * Presses all the keys in the given order, then waits for
+     * the FX events thread.
+     */
+    public void press(KeyCode... keyCodes);
+
+    /**
+     * Releases all the keys in the given order, then waits for
+     * the FX events thread.
+     */
+    public void release(KeyCode... keyCodes);
 }

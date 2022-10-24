@@ -151,6 +151,18 @@ public class KeyboardTest extends ApplicationTest
     }
 
     @Test
+    public void testSingleKey2()
+    {
+        press(KeyCode.A);
+        release(KeyCode.A);
+        MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("a"), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.UNDEFINED), isCharacter("a"), isText(""), isType(KeyEvent.KEY_TYPED)),
+                Matchers.allOf(isKey(KeyCode.A), isCharacter("\0"), isText("a"), isType(KeyEvent.KEY_RELEASED))
+        ));
+    }
+
+    @Test
     public void testSingleNonTypableKey()
     {
         push(KeyCode.ESCAPE);
