@@ -18,6 +18,7 @@ import javafx.scene.Node;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public interface NodeQuery
@@ -30,7 +31,7 @@ public interface NodeQuery
      */
     public <T extends Node> T query();
 
-    public <T extends Node> List<T> queryAll();
+    public <T extends Node> Set<T> queryAll();
     
     public NodeQuery lookup(String query);
     

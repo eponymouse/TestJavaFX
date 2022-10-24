@@ -2,10 +2,13 @@ package com.eponymouse.testjavafx;
 
 import com.eponymouse.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -51,8 +54,10 @@ class NodeQueryImpl implements NodeQuery
     }
 
     @Override
-    public <T extends Node> List<T> queryAll()
+    public <T extends Node> Set<T> queryAll()
     {
-        return (List<T>)(List)allRoots;
+        Set<T> s = Sets.newIdentityHashSet();
+        s.addAll((List)allRoots);
+        return Collections.unmodifiableSet(s);
     }
 }
