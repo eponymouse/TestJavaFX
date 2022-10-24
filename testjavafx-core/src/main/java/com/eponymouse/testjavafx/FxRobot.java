@@ -20,19 +20,23 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.robot.Robot;
 import javafx.stage.Window;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class FxRobot implements FxRobotInterface
 {
     private final Robot actualRobot = FxThreadUtils.syncFx(Robot::new);
-
+    private final Set<KeyCode> pressedKeys = new HashSet<>();
+    
     @Override
     public void push(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
         order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
+        FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
         FxThreadUtils.waitForFxEvents();
     }
 
@@ -41,14 +45,16 @@ public class FxRobot implements FxRobotInterface
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
+        FxThreadUtils.asyncFx(() -> pressedKeys.addAll(order));
         FxThreadUtils.waitForFxEvents();
     }
 
     @Override
     public void release(KeyCode... keyCodes)
     {
-        ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
+        ImmutableList<KeyCode> order = keyCodes.length == 0 ? FxThreadUtils.syncFx(() -> ImmutableList.copyOf(pressedKeys)) : ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
+        FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
         FxThreadUtils.waitForFxEvents();
     }
 

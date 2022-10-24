@@ -32,7 +32,8 @@ public interface FXRobotInterfaceKeyboard
 
     /**
      * Releases all the keys in the given order, then waits for
-     * the FX events thread.
+     * the FX events thread.  Calling with no arguments releases
+     * all keys held down by previously calling press.
      */
     public void release(KeyCode... keyCodes);
 }

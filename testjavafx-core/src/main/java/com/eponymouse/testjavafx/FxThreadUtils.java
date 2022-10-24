@@ -77,6 +77,8 @@ public class FxThreadUtils
 
     public static void waitForFxEvents()
     {
+        if (Platform.isFxApplicationThread())
+            return;
         Semaphore s = new Semaphore(0);
         for (int i = 0; i < 5; i++)
         {
