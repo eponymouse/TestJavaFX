@@ -101,6 +101,12 @@ public class NodeQueryTest extends ApplicationTest
     {
         MatcherAssert.assertThat(from(center, bottom).lookup(".but-2x3").queryAll(), Matchers.hasSize(2));
     }
+
+    @Test
+    public void someButtons2B()
+    {
+        MatcherAssert.assertThat(from(center, bottom).lookup(n -> n instanceof Button && ((Button)n).getText().equals("2x3")).queryAll(), Matchers.hasSize(2));
+    }
     
     @Test
     public void golden()
