@@ -15,25 +15,25 @@ package com.eponymouse.testjavafx;
 
 import javafx.scene.input.KeyCode;
 
-public interface FXRobotInterfaceKeyboard
+public interface FXRobotInterfaceKeyboard<T extends FXRobotInterfaceKeyboard<T>>
 {
     /**
      * Presses all the keys in order, then releases
      * them all in reverse order, then waits for
      * the FX events thread.
      */
-    public void push(KeyCode... keyCodes);
+    public T push(KeyCode... keyCodes);
 
     /**
      * Presses all the keys in the given order, then waits for
      * the FX events thread.
      */
-    public void press(KeyCode... keyCodes);
+    public T press(KeyCode... keyCodes);
 
     /**
      * Releases all the keys in the given order, then waits for
      * the FX events thread.  Calling with no arguments releases
      * all keys held down by previously calling press.
      */
-    public void release(KeyCode... keyCodes);
+    public T release(KeyCode... keyCodes);
 }

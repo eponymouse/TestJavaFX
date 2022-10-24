@@ -31,31 +31,34 @@ public class FxRobot implements FxRobotInterface
     private final Set<KeyCode> pressedKeys = new HashSet<>();
     
     @Override
-    public void push(KeyCode... keyCodes)
+    public FxRobotInterface push(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
         order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
         FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
-    public void press(KeyCode... keyCodes)
+    public FxRobotInterface press(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
         FxThreadUtils.asyncFx(() -> pressedKeys.addAll(order));
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
-    public void release(KeyCode... keyCodes)
+    public FxRobotInterface release(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = keyCodes.length == 0 ? FxThreadUtils.syncFx(() -> ImmutableList.copyOf(pressedKeys)) : ImmutableList.copyOf(keyCodes);
         order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
         FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
