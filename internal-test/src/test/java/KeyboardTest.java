@@ -41,6 +41,9 @@ public class KeyboardTest extends ApplicationTest
     @Override
     public void start(Stage primaryStage)
     {
+        // Add a delay between tests to avoid old events coming through:
+        sleep(1000);
+        
         this.stage = primaryStage;
         this.stage.setScene(new Scene(new Region()));
         this.stage.getScene().addEventFilter(KeyEvent.ANY, e -> {

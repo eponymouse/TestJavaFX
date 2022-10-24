@@ -86,7 +86,7 @@ public class FxThreadUtils
             {
                 Platform.runLater(s::release);
                 s.acquire();
-                Thread.sleep(10);
+                Thread.sleep(15);
             }
             catch (InterruptedException e)
             {

@@ -66,6 +66,18 @@ public class FxRobot implements FxRobotInterface
         return this;
     }
 
+    public FxRobotInterface sleep(int millisecondDelay)
+    {
+        try
+        {
+            Thread.sleep(millisecondDelay);
+        }
+        catch (InterruptedException e)
+        {
+        }
+        return this;
+    }
+
     @Override
     public List<Window> listWindows()
     {
