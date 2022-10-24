@@ -15,15 +15,22 @@
 import com.eponymouse.testjavafx.FxThreadUtils;
 import com.eponymouse.testjavafx.junit4.ApplicationTest;
 import com.google.common.collect.ImmutableList;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class CleanupTest extends ApplicationTest
 {
     private Stage stage;
+    private final ArrayList<KeyEvent> keyEvents = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage)
@@ -31,6 +38,8 @@ public class CleanupTest extends ApplicationTest
         // Check previous windows were cleaned up:
         MatcherAssert.assertThat(listWindows(), Matchers.equalTo(ImmutableList.of()));
         this.stage = primaryStage;
+        primaryStage.setScene(new Scene(new Region()));
+        primaryStage.getScene().addEventFilter(KeyEvent.ANY, keyEvents::add);
         primaryStage.show();
     }
 
@@ -44,5 +53,21 @@ public class CleanupTest extends ApplicationTest
     public void test2()
     {
         MatcherAssert.assertThat(listWindows(), Matchers.equalTo(ImmutableList.of(stage)));
+    }
+    
+    @Test
+    public void test3()
+    {
+        press(KeyCode.A);
+    }
+    
+    @Test
+    public void test4() throws InterruptedException
+    {
+        Thread.sleep(3000);
+        ImmutableList<KeyEvent> evs = ImmutableList.copyOf(keyEvents);
+        // Release in case of test failure, to avoid key being stuck down:
+        release(KeyCode.A);
+        MatcherAssert.assertThat(evs, Matchers.empty());
     }
 }
