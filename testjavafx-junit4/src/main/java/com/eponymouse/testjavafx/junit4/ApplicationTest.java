@@ -29,6 +29,7 @@ public abstract class ApplicationTest extends FxRobot
             new JUnitApplication(this).start(new Stage());
             return null;
         });
+        sleep(500);
     }
 
     @After
@@ -36,7 +37,7 @@ public abstract class ApplicationTest extends FxRobot
         // TODO release mouse buttons
         FxThreadUtils.syncFx(() -> release());
         // Let all the release events come through before stopping:
-        sleep(1000);
+        sleep(500);
         FxThreadUtils.syncFx(this::stop);
         listWindows().forEach(w -> FxThreadUtils.syncFx(w::hide));
     }
