@@ -58,6 +58,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         return moveTo(new Point2D(screenX, screenY));
     }
     
+    public T moveBy(double x, double y);
+    
     public T moveTo(String query, Motion motion);
     public T moveTo(Point2D screenPosition, Motion motion);
 
