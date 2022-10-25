@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+// package-visible
 class NodeQueryImpl implements NodeQuery
 {
     // Will only be run on FX thread:
