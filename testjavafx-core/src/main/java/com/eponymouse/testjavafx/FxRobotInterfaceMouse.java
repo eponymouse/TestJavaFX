@@ -39,7 +39,16 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     
     public T clickOn(MouseButton... mouseButtons);
 
-    public T moveTo(String query);
+    public default T moveTo(String query)
+    {
+        return moveTo(query, Motion.DEFAULT());
+    }
 
-    public T moveTo(Point2D screenPosition);
+    public default T moveTo(Point2D screenPosition)
+    {
+        return moveTo(screenPosition, Motion.DEFAULT());
+    }
+
+    public T moveTo(String query, Motion motion);
+    public T moveTo(Point2D screenPosition, Motion motion);
 }

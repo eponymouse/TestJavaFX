@@ -15,6 +15,9 @@ package com.eponymouse.testjavafx;
 
 import com.eponymouse.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;
@@ -27,10 +30,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 
 public class FxRobot implements FxRobotInterface
@@ -81,6 +89,7 @@ public class FxRobot implements FxRobotInterface
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, KeyCode.UNDEFINED, "")));
             sleep(millisecondDelay);
         });
+        FxThreadUtils.waitForFxEvents();
         return this;
     }
 
@@ -182,18 +191,56 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface moveTo(Point2D screenPosition)
+    public FxRobotInterface moveTo(Point2D screenPosition, Motion motion)
     {
-        // TODO move gradually
-        FxThreadUtils.syncFx(() -> actualRobot.mouseMove(screenPosition));
+        if (motion == Motion.STRAIGHT_LINE && !Platform.isFxApplicationThread())
+        {
+            CompletableFuture<Boolean> f = new CompletableFuture<>();
+            Platform.runLater(() -> {
+                Point2D curPos = actualRobot.getMousePosition();
+                double pixelsPerSecond = 500;
+                double seconds = screenPosition.distance(curPos) / pixelsPerSecond;
+                Timeline t = new Timeline();
+
+                for (double s = 0; s < seconds; s += 1.0/32.0)
+                {
+                    double proportion = s / seconds;
+                    t.getKeyFrames().add(new KeyFrame(Duration.seconds(s), e -> {
+                        actualRobot.mouseMove(
+                         curPos.getX() + (screenPosition.getX() - curPos.getX()) * proportion,
+                         curPos.getY() + (screenPosition.getY() - curPos.getY()) * proportion
+                        );
+                    }));
+                }
+                        
+                t.setOnFinished(e -> {
+                    // Make sure to always end on exact position:
+                    actualRobot.mouseMove(screenPosition);
+                    f.complete(true);
+                });
+                t.play();
+            });
+            try
+            {
+                f.get(5, TimeUnit.SECONDS);
+            }
+            catch (ExecutionException | InterruptedException | TimeoutException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        else
+        {
+            FxThreadUtils.syncFx(() -> actualRobot.mouseMove(screenPosition));
+        }
         FxThreadUtils.waitForFxEvents();
         return this;
     }
 
     @Override
-    public FxRobotInterface moveTo(String query)
+    public FxRobotInterface moveTo(String query, Motion motion)
     {
-        return moveTo(point(query));
+        return moveTo(point(query), motion);
     }
 
     @Override
