@@ -140,4 +140,13 @@ public interface NodeQuery
      *         want to use the new filtered search created by this method. 
      */
     public NodeQuery filter(Predicate<Node> nodePredicate);
+
+
+    /**
+     * Filter, named for compatibility with TestFX.
+     */
+    public default NodeQuery match(Predicate<Node> nodePredicate)
+    {
+        return filter(nodePredicate);
+    }
 }

@@ -244,6 +244,12 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
+    public FxRobotInterface moveTo(Node node)
+    {
+        return moveTo(point(node));
+    }
+
+    @Override
     public Point2D point(Node node)
     {
         return FxThreadUtils.syncFx(() -> {

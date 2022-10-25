@@ -14,7 +14,9 @@
 package com.eponymouse.testjavafx;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 
@@ -44,14 +46,32 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         return moveTo(query, Motion.DEFAULT());
     }
 
+    public T moveTo(Node node);
+    
     public default T moveTo(Point2D screenPosition)
     {
         return moveTo(screenPosition, Motion.DEFAULT());
     }
 
+    public default T moveTo(double screenX, double screenY)
+    {
+        return moveTo(new Point2D(screenX, screenY));
+    }
+    
     public T moveTo(String query, Motion motion);
     public T moveTo(Point2D screenPosition, Motion motion);
 
     public void scroll(int verticalAmount);
+    
+    public default void scroll(VerticalDirection verticalDirection)
+    {
+        scroll(verticalDirection == VerticalDirection.DOWN ? 1 : -1);
+    }
+    
     public void scrollHorizontal(int horizontalAmount);
+
+    public default void scroll(HorizontalDirection horizontalDirection)
+    {
+        scroll(horizontalDirection == HorizontalDirection.RIGHT ? 1 : -1);
+    }
 }
