@@ -145,8 +145,8 @@ public interface NodeQuery
     /**
      * Filter, named for compatibility with TestFX.
      */
-    public default NodeQuery match(Predicate<Node> nodePredicate)
+    public default <T extends Node> NodeQuery match(Predicate<T> nodePredicate)
     {
-        return filter(nodePredicate);
+        return filter((Predicate<Node>) nodePredicate);
     }
 }
