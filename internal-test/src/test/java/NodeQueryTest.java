@@ -97,6 +97,12 @@ public class NodeQueryTest extends ApplicationTest
     }
 
     @Test
+    public void someButtonsFiltered()
+    {
+        MatcherAssert.assertThat(lookup(".but").filter(n -> ((Button)n).getText().endsWith("3")).queryAll(), Matchers.hasSize(30));
+    }
+
+    @Test
     public void someButtons2()
     {
         MatcherAssert.assertThat(from(center, bottom).lookup(".but-2x3").queryAll(), Matchers.hasSize(2));

@@ -68,4 +68,10 @@ class NodeQueryImpl implements NodeQuery
             return Collections.unmodifiableSet(s);
         });
     }
+
+    @Override
+    public NodeQuery filter(Predicate<Node> nodePredicate)
+    {
+        return new NodeQueryImpl(() -> allRoots.get().stream().filter(nodePredicate).collect(ImmutableList.toImmutableList()));
+    }
 }

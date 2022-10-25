@@ -130,4 +130,14 @@ public interface NodeQuery
         }
         return t;
     }
+
+    /**
+     * Filters the current results (without searching any further for new results)
+     * to only retain those that match the given predicate.
+     * @param nodePredicate Only nodes that return true from this predicate will be retained
+     * @return A new NodeQuery object representing the filtered search.  Note that the
+     *         current object is unmodified and you must use the return value if you
+     *         want to use the new filtered search created by this method. 
+     */
+    public NodeQuery filter(Predicate<Node> nodePredicate);
 }
