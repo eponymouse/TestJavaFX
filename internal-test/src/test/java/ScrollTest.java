@@ -30,6 +30,8 @@ public class ScrollTest extends ApplicationTest
         Rectangle bigRect = new Rectangle(10_000, 10_000);
         bigRect.setCache(false);
         scrollPane = new ScrollPane(bigRect);
+        scrollPane.setMaxWidth(600);
+        scrollPane.setMaxHeight(600);
         primaryStage.setScene(new Scene(scrollPane));
         primaryStage.show();
     }
