@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -42,11 +43,11 @@ public class ScrollTest extends ApplicationTest
         moveTo(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
-        scroll(-1);
+        scroll(SystemUtils.IS_OS_MAC_OSX ? -1 : 1);
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.greaterThan(0.0));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
         // Single scroll may not do it so scroll twice to be sure:
-        scroll(2);
+        scroll(SystemUtils.IS_OS_MAC_OSX ? 2 : -2);
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
     }
 
@@ -56,7 +57,7 @@ public class ScrollTest extends ApplicationTest
         moveTo(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
-        scrollHorizontal(-1);
+        scrollHorizontal(SystemUtils.IS_OS_MAC_OSX ? -1 : 1);
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.greaterThan(0.0));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
     }
