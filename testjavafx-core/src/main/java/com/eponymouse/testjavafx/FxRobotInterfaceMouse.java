@@ -67,13 +67,23 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     
     public default void scroll(VerticalDirection verticalDirection)
     {
-        scroll(verticalDirection == VerticalDirection.DOWN ? 1 : -1);
+        scroll(1, verticalDirection);
+    }
+
+    public default void scroll(int amount, VerticalDirection verticalDirection)
+    {
+        scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
     }
     
     public void scrollHorizontal(int horizontalAmount);
 
     public default void scroll(HorizontalDirection horizontalDirection)
     {
-        scroll(horizontalDirection == HorizontalDirection.RIGHT ? 1 : -1);
+        scroll(1, horizontalDirection);
+    }
+    
+    public default void scroll(int amount, HorizontalDirection horizontalDirection)
+    {
+        scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
     }
 }
