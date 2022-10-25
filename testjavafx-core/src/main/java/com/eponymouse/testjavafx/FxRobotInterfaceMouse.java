@@ -51,4 +51,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     public T moveTo(String query, Motion motion);
     public T moveTo(Point2D screenPosition, Motion motion);
+
+    public void scroll(int verticalAmount);
+    public void scrollHorizontal(int horizontalAmount);
 }

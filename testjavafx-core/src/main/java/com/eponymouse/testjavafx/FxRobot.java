@@ -251,4 +251,20 @@ public class FxRobot implements FxRobotInterface
             return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());
         });
     }
+
+    @Override
+    public void scroll(int verticalAmount)
+    {
+        FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(verticalAmount));
+        FxThreadUtils.waitForFxEvents();
+    }
+
+    @Override
+    public void scrollHorizontal(int horizontalAmount)
+    {
+        press(KeyCode.SHIFT);
+        FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(horizontalAmount));
+        release(KeyCode.SHIFT);
+        FxThreadUtils.waitForFxEvents();
+    }
 }
