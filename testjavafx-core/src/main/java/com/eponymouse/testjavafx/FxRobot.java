@@ -193,6 +193,17 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobotInterface moveTo(Point2D screenPosition, Motion motion)
     {
+        if (motion == Motion.HORIZONTAL_FIRST)
+        {
+            moveTo(new Point2D(screenPosition.getX(), FxThreadUtils.syncFx(actualRobot::getMouseY)), Motion.STRAIGHT_LINE);
+            moveTo(screenPosition, Motion.STRAIGHT_LINE);
+        }
+        else if (motion == Motion.VERTICAL_FIRST)
+        {
+            moveTo(new Point2D(FxThreadUtils.syncFx(actualRobot::getMouseX), screenPosition.getY()), Motion.STRAIGHT_LINE);
+            moveTo(screenPosition, Motion.STRAIGHT_LINE);
+        }
+        
         if (motion == Motion.STRAIGHT_LINE && !Platform.isFxApplicationThread())
         {
             CompletableFuture<Boolean> f = new CompletableFuture<>();

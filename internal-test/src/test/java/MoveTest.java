@@ -85,6 +85,38 @@ public class MoveTest extends ApplicationTest
                 new Point2D(5, 3),
                 new Point2D(5, 2))));
     }
+
+    @Test
+    public void testHorizFirst()
+    {
+        moveTo(".x2.y7", Motion.TELEPORT);
+        MatcherAssert.assertThat(getPath(), Matchers.equalTo(ImmutableList.of(new Point2D(2, 7))));
+        moveTo(".x5.y4", Motion.HORIZONTAL_FIRST);
+        MatcherAssert.assertThat(getPath(), Matchers.equalTo(ImmutableList.of(
+                new Point2D(2, 7),
+                new Point2D(3, 7),
+                new Point2D(4, 7),
+                new Point2D(5, 7),
+                new Point2D(5, 6),
+                new Point2D(5, 5),
+                new Point2D(5, 4))));
+    }
+
+    @Test
+    public void testVertFirst()
+    {
+        moveTo(".x2.y7", Motion.TELEPORT);
+        MatcherAssert.assertThat(getPath(), Matchers.equalTo(ImmutableList.of(new Point2D(2, 7))));
+        moveTo(".x5.y4", Motion.VERTICAL_FIRST);
+        MatcherAssert.assertThat(getPath(), Matchers.equalTo(ImmutableList.of(
+                new Point2D(2, 7),
+                new Point2D(2, 6),
+                new Point2D(2, 5),
+                new Point2D(2, 4),
+                new Point2D(3, 4),
+                new Point2D(4, 4),
+                new Point2D(5, 4))));
+    }
     
     private ImmutableList<Point2D> getPath()
     {
