@@ -177,7 +177,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public void press(MouseButton... buttons)
+    public FxRobotInterface press(MouseButton... buttons)
     {
         MouseButton[] actualButtons = buttons.length == 0 ? new MouseButton[]{MouseButton.PRIMARY} : buttons;
         FxThreadUtils.syncFx(() -> {
@@ -185,10 +185,11 @@ public class FxRobot implements FxRobotInterface
             pressedButtons.addAll(Arrays.asList(actualButtons));
         });
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
-    public void release(MouseButton... buttons)
+    public FxRobotInterface release(MouseButton... buttons)
     {
         FxThreadUtils.syncFx(() -> {
             if (buttons.length == 0)
@@ -206,6 +207,7 @@ public class FxRobot implements FxRobotInterface
             }
         });
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override

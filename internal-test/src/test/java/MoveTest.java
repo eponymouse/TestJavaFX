@@ -30,6 +30,10 @@ import java.util.ArrayList;
 public class MoveTest extends ApplicationTest
 {
     private final ArrayList<Point2D> path = new ArrayList<>();
+    private final ArrayList<Point2D> dragPath = new ArrayList<>();
+    private Point2D lastPress = null;
+    private Point2D lastRelease = null;
+    
     @Override
     public void start(Stage primaryStage) throws Exception
     {
@@ -51,7 +55,12 @@ public class MoveTest extends ApplicationTest
     {
         Rectangle r = new Rectangle(50, 50);
         r.getStyleClass().addAll("x" + i, "y" + j);
-        r.setOnMouseEntered(e -> path.add(new Point2D(i, j)));
+        Point2D us = new Point2D(i, j);
+        r.setOnDragDetected(e -> {r.startFullDrag();});
+        r.setOnMouseEntered(e -> path.add(us));
+        r.setOnMouseDragEntered(e -> dragPath.add(us));
+        r.setOnMousePressed(e -> {this.lastPress = us;});
+        r.setOnMouseDragReleased(e -> {this.lastRelease = us;});
         return r;
     }
     
@@ -84,6 +93,27 @@ public class MoveTest extends ApplicationTest
                 new Point2D(4, 4),
                 new Point2D(5, 3),
                 new Point2D(5, 2))));
+        MatcherAssert.assertThat(getDragPath(), Matchers.empty());
+    }
+
+    @Test
+    public void testDiagonalDrag()
+    {
+        moveTo(".x3.y7", Motion.TELEPORT);
+        MatcherAssert.assertThat(getPath(), Matchers.equalTo(ImmutableList.of(new Point2D(3, 7))));
+        MatcherAssert.assertThat(getDragPath(), Matchers.empty());
+        drag();
+        dropTo(point(".x5.y2"));
+        MatcherAssert.assertThat(FxThreadUtils.syncFx(() -> lastPress), Matchers.equalTo(new Point2D(3, 7)));
+        MatcherAssert.assertThat(FxThreadUtils.syncFx(() -> lastRelease), Matchers.equalTo(new Point2D(5, 2)));
+        MatcherAssert.assertThat(getDragPath(), Matchers.equalTo(ImmutableList.of(
+            //new Point2D(3, 7), Source node won't feature
+            new Point2D(3, 6),
+            new Point2D(4, 6),
+            new Point2D(4, 5),
+            new Point2D(4, 4),
+            new Point2D(5, 3),
+            new Point2D(5, 2))));
     }
 
     @Test
@@ -121,5 +151,10 @@ public class MoveTest extends ApplicationTest
     private ImmutableList<Point2D> getPath()
     {
         return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(path));
+    }
+
+    private ImmutableList<Point2D> getDragPath()
+    {
+        return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(dragPath));
     }
 }

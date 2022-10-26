@@ -22,9 +22,10 @@ import javafx.scene.input.MouseButton;
 
 public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 {
-    public void press(MouseButton... buttons);
-    public void release(MouseButton... buttons);
-    
+    public T press(MouseButton... buttons);
+
+    public T release(MouseButton... buttons);
+
     public default T clickOn(Node node, MouseButton... mouseButtons)
     {
         Point2D p = FxThreadUtils.syncFx(() -> {
@@ -41,7 +42,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         moveTo(screenPosition);
         return clickOn(mouseButtons);
     }
-    
+
     public T clickOn(MouseButton... mouseButtons);
 
     public default T moveTo(String query)
@@ -50,7 +51,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     }
 
     public T moveTo(Node node);
-    
+
     public default T moveTo(Point2D screenPosition)
     {
         return moveTo(screenPosition, Motion.DEFAULT());
@@ -60,11 +61,62 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     {
         return moveTo(new Point2D(screenX, screenY));
     }
-    
+
     public T moveBy(double x, double y);
-    
+
     public T moveTo(String query, Motion motion);
+
     public T moveTo(Point2D screenPosition, Motion motion);
+
+    /**
+     * Starts a drag at the current mouse position.  This is a synonym for
+     * {@link #press(MouseButton...)}
+     *
+     * @param mouseButtons
+     * @return
+     */
+    public default T drag(MouseButton... mouseButtons)
+    {
+        return press(mouseButtons);
+    }
+
+    /**
+     * Moves the mouse to the given position then starts a drag by pressing the
+     * given mouse buttons.  This is equivalent to calling {@link #moveTo(Point2D)}
+     * followed by {@link #press(MouseButton...)}.
+     * 
+     * @param from
+     * @param mouseButtons
+     * @return
+     */
+    public default T drag(Point2D from, MouseButton... mouseButtons)
+    {
+        moveTo(from);
+        return press(mouseButtons);
+    }
+
+    /**
+     * Drops the item at the current mouse position.  This is a synonym for
+     * {@link #release(MouseButton...)}
+     */
+    public default T drop()
+    {
+        return release(new MouseButton[0]);
+    }
+
+    /**
+     * Drops the item at the given mouse position.  This is equivalent to calling
+     * {@link #moveTo(Point2D)} followed by {@link #release(MouseButton...)}
+     * 
+     * @param to
+     * @return
+     */
+    public default T dropTo(Point2D to)
+    {
+        moveTo(to, Motion.STRAIGHT_LINE);
+        return release(new MouseButton[0]);
+    }
+        
 
     public void scroll(int verticalAmount);
     
