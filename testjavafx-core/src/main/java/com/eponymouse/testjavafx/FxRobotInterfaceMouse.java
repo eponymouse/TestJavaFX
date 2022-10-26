@@ -22,6 +22,9 @@ import javafx.scene.input.MouseButton;
 
 public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 {
+    public void press(MouseButton... buttons);
+    public void release(MouseButton... buttons);
+    
     public default T clickOn(Node node, MouseButton... mouseButtons)
     {
         Point2D p = FxThreadUtils.syncFx(() -> {

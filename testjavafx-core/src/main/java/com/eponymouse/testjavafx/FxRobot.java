@@ -32,6 +32,8 @@ import javafx.scene.robot.Robot;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,8 @@ import java.util.function.Predicate;
 public class FxRobot implements FxRobotInterface
 {
     private final Robot actualRobot = FxThreadUtils.syncFx(Robot::new);
-    private final Set<KeyCode> pressedKeys = new HashSet<>();
+    private final Set<KeyCode> pressedKeys = EnumSet.noneOf(KeyCode.class);
+    private final Set<MouseButton> pressedButtons = EnumSet.noneOf(MouseButton.class);
     
     @Override
     public FxRobotInterface push(KeyCode... keyCodes)
@@ -174,6 +177,38 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
+    public void press(MouseButton... buttons)
+    {
+        MouseButton[] actualButtons = buttons.length == 0 ? new MouseButton[]{MouseButton.PRIMARY} : buttons;
+        FxThreadUtils.syncFx(() -> {
+            actualRobot.mousePress(actualButtons);
+            pressedButtons.addAll(Arrays.asList(actualButtons));
+        });
+        FxThreadUtils.waitForFxEvents();
+    }
+
+    @Override
+    public void release(MouseButton... buttons)
+    {
+        FxThreadUtils.syncFx(() -> {
+            if (buttons.length == 0)
+            {
+                actualRobot.mouseRelease(pressedButtons.toArray(MouseButton[]::new));
+                pressedButtons.clear();
+            }
+            else
+            {
+                for (MouseButton button : buttons)
+                {
+                    if (pressedButtons.remove(button))
+                        actualRobot.mouseRelease(button);
+                }
+            }
+        });
+        FxThreadUtils.waitForFxEvents();
+    }
+
+    @Override
     public FxRobotInterface clickOn(String query, MouseButton... mouseButtons)
     {
         Node node = lookup(query).queryWithRetry();
@@ -185,7 +220,15 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface clickOn(MouseButton... mouseButtons)
     {
         MouseButton[] actualButtons = mouseButtons.length == 0 ? new MouseButton[] {MouseButton.PRIMARY} : mouseButtons;
-        FxThreadUtils.syncFx(() -> actualRobot.mouseClick(actualButtons));
+        FxThreadUtils.syncFx(() -> {
+            // If the button was pressed, need to release it before we can click it:
+            for (MouseButton b : actualButtons)
+            {
+                if (pressedButtons.remove(b))
+                    actualRobot.mouseRelease(b);
+            }
+            actualRobot.mouseClick(actualButtons);
+        });
         FxThreadUtils.waitForFxEvents();
         return this;
     }

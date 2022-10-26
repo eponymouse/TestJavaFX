@@ -16,6 +16,8 @@ package com.eponymouse.testjavafx.junit4;
 import com.eponymouse.testjavafx.FxThreadUtils;
 import com.eponymouse.testjavafx.FxRobot;
 import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
@@ -34,8 +36,10 @@ public abstract class ApplicationTest extends FxRobot
 
     @After
     public final void internalAfter() throws Exception {
-        // TODO release mouse buttons
-        FxThreadUtils.syncFx(() -> release());
+        FxThreadUtils.syncFx(() -> {
+            release(new KeyCode[0]);
+            release(new MouseButton[0]);
+        });
         // Let all the release events come through before stopping:
         sleep(500);
         FxThreadUtils.syncFx(this::stop);
