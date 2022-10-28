@@ -214,7 +214,9 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface clickOn(String query, MouseButton... mouseButtons)
     {
         Node node = lookup(query).queryWithRetry();
-        clickOn(FxThreadUtils.syncFx(() -> node.localToScreen(new Point2D(node.getBoundsInLocal().getCenterX(), node.getBoundsInLocal().getCenterY()))), mouseButtons);
+        if (node == null)
+            throw new RuntimeException("No node found to click for query: \"" + query + "\"");
+        clickOn(point(node), mouseButtons);
         return this;
     }
 
@@ -314,6 +316,8 @@ public class FxRobot implements FxRobotInterface
     @Override
     public Point2D point(Node node)
     {
+        if (node == null)
+            throw new NullPointerException("Cannot get point for null node");
         return FxThreadUtils.syncFx(() -> {
             Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
             return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());

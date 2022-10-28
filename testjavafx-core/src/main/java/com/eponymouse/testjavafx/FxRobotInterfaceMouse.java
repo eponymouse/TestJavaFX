@@ -28,6 +28,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     public default T clickOn(Node node, MouseButton... mouseButtons)
     {
+        if (node == null)
+            throw new NullPointerException("Cannot click on null node");
         Point2D p = FxThreadUtils.syncFx(() -> {
             Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
             return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());
