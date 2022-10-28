@@ -18,7 +18,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Window;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
  * Any method that returns FxRobotInterface returns this
  * for easy chaining.
  */
-public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>
+public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>, FxRobotInterfaceWindow<FxRobotInterface>
 {
     /**
      * Sleep for the given number of milliseconds.
@@ -42,16 +41,6 @@ public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterf
      * thread.
      */
     FxRobotInterface sleep(int milliseconds);
-
-    /**
-     * Gets a list of all currently showing JavaFX windows.
-     * 
-     * This method is safe to call on the FX thread.  If
-     * called on another thread it waits to fetch the list
-     * from the FX thread, and will block if the FX thread
-     * is busy.
-     */
-    public List<Window> listWindows();
 
     public Window targetWindow();
 

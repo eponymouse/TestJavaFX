@@ -147,27 +147,20 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public List<Window> listWindows()
-    {
-        return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
-    }
-
-    private Window focusedWindow()
-    {
-        return FxThreadUtils.syncFx(() -> Window.getWindows().stream().filter(Window::isFocused).findFirst().orElse(null));
-    }
-
-    @Override
     public NodeQuery lookup(String query)
     {
-        Node root = FxThreadUtils.syncFx(() -> focusedWindow().getScene().getRoot());
-        return from(root).lookup(query);
+        return new NodeQueryImpl(this::targetRoots).lookup(query);
+    }
+
+    private ImmutableList<Node> targetRoots()
+    {
+        return FxThreadUtils.syncFx(() -> listTargetWindows().stream().map(w -> w.getScene().getRoot()).collect(ImmutableList.toImmutableList()));
     }
 
     @Override
     public NodeQuery lookup(Predicate<Node> nodePredicate)
     {
-        return new NodeQueryImpl(() -> ImmutableList.of(focusedWindow().getScene().getRoot())).lookup(nodePredicate);
+        return new NodeQueryImpl(this::targetRoots).lookup(nodePredicate);
     }
 
     public NodeQuery from(Node... roots)
