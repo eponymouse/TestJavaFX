@@ -54,9 +54,11 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface push(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
-        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(actualKey(c))));
-        order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(actualKey(c))));
-        FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
+        FxThreadUtils.syncFx(() -> {
+            order.forEach(c -> actualRobot.keyPress(actualKey(c)));
+            order.reverse().forEach(c -> actualRobot.keyRelease(actualKey(c)));
+            pressedKeys.removeAll(order);
+        });
         FxThreadUtils.waitForFxEvents();
         return this;
     }
@@ -73,8 +75,10 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface press(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
-        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
-        FxThreadUtils.asyncFx(() -> pressedKeys.addAll(order));
+        FxThreadUtils.syncFx(() -> {
+            order.forEach(c -> actualRobot.keyPress(c));
+            pressedKeys.addAll(order);
+        });
         FxThreadUtils.waitForFxEvents();
         return this;
     }
@@ -83,8 +87,11 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface release(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = keyCodes.length == 0 ? FxThreadUtils.syncFx(() -> ImmutableList.copyOf(pressedKeys)) : ImmutableList.copyOf(keyCodes);
-        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
-        FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
+        FxThreadUtils.syncFx(() -> {
+            order.forEach(c -> actualRobot.keyRelease(c));
+            pressedKeys.removeAll(order);
+        });
+        
         FxThreadUtils.waitForFxEvents();
         return this;
     }
