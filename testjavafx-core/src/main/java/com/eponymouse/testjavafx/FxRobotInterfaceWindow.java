@@ -81,8 +81,5 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
         return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
     }
 
-    public default Window focusedWindow()
-    {
-        return FxThreadUtils.syncFx(() -> Window.getWindows().stream().filter(Window::isFocused).findFirst().orElse(null));
-    }
+    public Window focusedWindow();
 }

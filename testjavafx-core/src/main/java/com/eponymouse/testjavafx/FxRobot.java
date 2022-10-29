@@ -33,6 +33,7 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -49,6 +50,9 @@ public class FxRobot implements FxRobotInterface
     private final Robot actualRobot = FxThreadUtils.syncFx(Robot::new);
     private final Set<KeyCode> pressedKeys = EnumSet.noneOf(KeyCode.class);
     private final Set<MouseButton> pressedButtons = EnumSet.noneOf(MouseButton.class);
+
+    // Only read/modified on FX thread:
+    private WeakReference<Window> lastFocusedWindow = null;
     
     @Override
     public FxRobotInterface push(KeyCode... keyCodes)
@@ -347,5 +351,30 @@ public class FxRobot implements FxRobotInterface
         FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(horizontalAmount));
         release(KeyCode.SHIFT);
         FxThreadUtils.waitForFxEvents();
+    }
+
+    public Window focusedWindow()
+    {
+        return FxThreadUtils.<Window>syncFx(() -> {
+            List<Window> windows = Window.getWindows();
+            for (Window window : windows)
+            {
+                if (window.isFocused())
+                {
+                    // Remember this:
+                    this.lastFocusedWindow = new WeakReference<>(window);
+                    return window;
+                }
+            }
+            // No focused window; is the most recent one around?
+            Window lastFocused = this.lastFocusedWindow == null ? null : this.lastFocusedWindow.get();
+            if (lastFocused != null)
+                return lastFocused;
+            // Is there only one window?
+            if (windows.size() == 1)
+                return windows.get(0); // Note we don't remember this, as it's only a default guess
+            // Give up:
+            return null;
+        });
     }
 }
