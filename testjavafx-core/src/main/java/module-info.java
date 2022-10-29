@@ -3,4 +3,5 @@ module com.eponymouse.testjavafx.core {
  
     requires com.google.common;
     requires javafx.graphics;
+    requires org.apache.commons.lang3;
 }

@@ -31,6 +31,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -53,11 +54,19 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface push(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
-        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(c)));
-        order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(c)));
+        order.forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyPress(actualKey(c))));
+        order.reverse().forEach(c -> FxThreadUtils.asyncFx(() -> actualRobot.keyRelease(actualKey(c))));
         FxThreadUtils.asyncFx(() -> pressedKeys.removeAll(order));
         FxThreadUtils.waitForFxEvents();
         return this;
+    }
+
+    private KeyCode actualKey(KeyCode c)
+    {
+        if (c == KeyCode.SHORTCUT)
+            return SystemUtils.IS_OS_MAC ? KeyCode.COMMAND : KeyCode.CONTROL;
+        else
+            return c;
     }
 
     @Override
