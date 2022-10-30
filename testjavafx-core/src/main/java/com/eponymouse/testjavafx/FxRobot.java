@@ -124,6 +124,7 @@ public class FxRobot implements FxRobotInterface
         }
         catch (InterruptedException e)
         {
+            // Just cancel the sleep, I guess
         }
         return this;
     }

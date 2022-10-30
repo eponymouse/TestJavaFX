@@ -14,6 +14,17 @@ subprojects { subproject ->
         modules = [ 'javafx.base', 'javafx.graphics' ]
         configuration = 'compileOnly'
     }
+
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+        toolVersion = "10.3.4"
+    }
+    
+    tasks.withType(Checkstyle) {
+        exclude "**/module-info.java"
+        //exclude "build/**/*"
+    }
     
     repositories {
         mavenCentral()

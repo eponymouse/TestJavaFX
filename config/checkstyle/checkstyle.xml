@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+    <module name="SuppressWarningsFilter"/>
+    <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
+        <module name="SuppressWarnings">
+            <property name="id" value="checkstyle:suppresswarnings"/>
+        </module>
+
+        <module name="AvoidNestedBlocks">
+            <property name="allowInSwitchCase" value="true"/>
+        </module>
+        <module name="AvoidStarImport"/>
+        <!-- <module name="ClassTypeParameterName"/> -->
+        <!-- Not everything static and final is to my mind a constant: -->
+        <!-- <module name="ConstantName"/> -->
+        <module name="EmptyBlock">
+            <property name="id" value="checkstyle:emptyblock"/>
+            <property name="option" value="text"/>
+        </module>
+        <module name="EmptyCatchBlock"/>
+        <!-- We should activate this before upgrading to Java 17: -->
+        <module name="IllegalIdentifierName">
+            <!-- Remove case insensitivity.  Why is it a problem to have a name Record? -->
+            <property name="format" value="^(?!(record|yield|var|permits|sealed|_)$).+$"/>
+        </module>
+        <module name="InterfaceTypeParameterName"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="MethodTypeParameterName"/>
+        <module name="PackageName"/>
+        <module name="RightCurly">
+            <property name="option" value="alone"/>
+        </module>
+        <module name="StaticVariableName"/>
+        <module name="TypeName"/>
+    </module>
+    <module name="RegexpHeader">
+        <property name="header" value=".*\n
+TestJavaFX: Testing for JavaFX applications\n
+Copyright .c. *\n
+\n
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the\n
+European Commission - subsequent versions of the EUPL .the .Licence..;\n
+\n
+You may not use this work except in compliance with the Licence.\n
+\n
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an .AS IS. basis,\n
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n
+See the Licence for the specific language governing permissions and limitations under the Licence.\n
+"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+</module>

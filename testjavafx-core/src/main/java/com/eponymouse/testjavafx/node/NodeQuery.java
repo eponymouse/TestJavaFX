@@ -124,6 +124,7 @@ public interface NodeQuery
                 }
                 catch (InterruptedException e)
                 {
+                    // Just cancel the sleep, we'll go round and retry anyway
                 }
                 t = query();
             }
