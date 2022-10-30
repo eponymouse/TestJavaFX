@@ -1,5 +1,5 @@
-module com.eponymouse.testjavafx.core {
-    exports com.eponymouse.testjavafx;
+module org.testjavafx.core {
+    exports org.testjavafx;
  
     requires com.google.common;
     requires javafx.graphics;

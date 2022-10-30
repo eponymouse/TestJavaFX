@@ -11,10 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package com.eponymouse.testjavafx.junit4;
+package org.testjavafx.junit4;
 
-import com.eponymouse.testjavafx.FxThreadUtils;
-import com.eponymouse.testjavafx.FxRobot;
+import org.testjavafx.FxThreadUtils;
+import org.testjavafx.FxRobot;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;

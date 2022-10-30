@@ -12,8 +12,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-import com.eponymouse.testjavafx.FxThreadUtils;
-import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import org.testjavafx.junit4.ApplicationTest;
 import com.google.common.collect.ImmutableList;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -22,7 +21,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -11,9 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-import com.eponymouse.testjavafx.FxThreadUtils;
-import com.eponymouse.testjavafx.Motion;
-import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import org.testjavafx.FxThreadUtils;
+import org.testjavafx.Motion;
+import org.testjavafx.junit4.ApplicationTest;
 import com.google.common.collect.ImmutableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;

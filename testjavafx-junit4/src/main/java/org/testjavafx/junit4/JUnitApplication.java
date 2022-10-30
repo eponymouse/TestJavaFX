@@ -11,18 +11,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package com.eponymouse.testjavafx;
+package org.testjavafx.junit4;
 
-public enum Motion
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class JUnitApplication extends Application
 {
-    TELEPORT,
-    STRAIGHT_LINE,
-    HORIZONTAL_FIRST,
-    VERTICAL_FIRST;
+    private final ApplicationTest userApplication;
 
-    @SuppressWarnings("checkstyle:MethodName")
-    public static Motion DEFAULT()
+    public JUnitApplication(ApplicationTest userApplication)
     {
-        return STRAIGHT_LINE;
+        this.userApplication = userApplication;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception
+    {
+        userApplication.start(primaryStage);
+    }
+
+    @Override
+    public void stop() throws Exception
+    {
+        userApplication.stop();
     }
 }

@@ -12,8 +12,8 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-import com.eponymouse.testjavafx.FxThreadUtils;
-import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import org.testjavafx.FxThreadUtils;
+import org.testjavafx.junit4.ApplicationTest;
 import com.google.common.collect.ImmutableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;

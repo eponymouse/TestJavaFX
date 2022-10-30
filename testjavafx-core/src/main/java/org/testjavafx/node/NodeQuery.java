@@ -11,19 +11,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package com.eponymouse.testjavafx.node;
+package org.testjavafx.node;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import org.testjavafx.FxRobot;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
 /**
  * A NodeQuery represents a search for a node (or set of nodes).  It
- * is created using methods in {@link com.eponymouse.testjavafx.FxRobot}.
+ * is created using methods in {@link FxRobot}.
  * 
  * It represents a potential search; nothing is actually executed until
  * the query methods are run.  This allows for thread-safety (all queries are
