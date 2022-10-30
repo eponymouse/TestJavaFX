@@ -11,16 +11,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package com.eponymouse.testjavafx.junit4;
+package org.testjavafx.junit4;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class JUnitApplication extends Application
+/**
+ * An internal helper class.
+ */
+class JUnitApplication extends Application
 {
+    /** The user application to delegate to. */
     private final ApplicationTest userApplication;
 
-    public JUnitApplication(ApplicationTest userApplication)
+    JUnitApplication(ApplicationTest userApplication)
     {
         this.userApplication = userApplication;
     }

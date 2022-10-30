@@ -23,7 +23,7 @@ subprojects { subproject ->
     
     tasks.withType(Checkstyle) {
         exclude "**/module-info.java"
-        //exclude "build/**/*"
+        exclude "**/*Test.java"
     }
     
     repositories {
@@ -37,4 +37,10 @@ tasks.named("dependencyUpdates").configure {
     rejectVersionIf {
         it.candidate.group.equals("org.openjfx")
     }
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.addBooleanOption('Xdoclint:all', true)
+    options.addBooleanOption('html5', true)
 }

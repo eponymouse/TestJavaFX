@@ -11,11 +11,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import org.testjavafx.junit4.ApplicationTest;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
@@ -30,7 +29,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class KeyboardTest extends ApplicationTest

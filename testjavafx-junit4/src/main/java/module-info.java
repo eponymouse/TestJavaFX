@@ -1,8 +1,11 @@
+/**
+ * Helper classes for testing with JUnit 4.
+ */
 // javac complains on modules named junit4, see https://bugs.openjdk.org/browse/JDK-8216185
-module com.eponymouse.testjavafx.junitFour {
-    exports com.eponymouse.testjavafx.junit4;
+module org.testjavafx.junitFour {
+    exports org.testjavafx.junit4;
     
-    requires com.eponymouse.testjavafx.core;
+    requires org.testjavafx.core;
     requires javafx.graphics;
     requires junit;
 }

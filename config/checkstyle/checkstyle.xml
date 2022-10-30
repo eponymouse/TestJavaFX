@@ -3,6 +3,7 @@
         "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
         "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
+    <module name="JavadocPackage"/>
     <module name="SuppressWarningsFilter"/>
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
@@ -10,11 +11,16 @@
             <property name="id" value="checkstyle:suppresswarnings"/>
         </module>
 
+        <module name="ArrayTypeStyle"/>
+        <module name="AtclauseOrder"/>
         <module name="AvoidNestedBlocks">
             <property name="allowInSwitchCase" value="true"/>
         </module>
         <module name="AvoidStarImport"/>
+        <module name="AvoidStaticImport"/>
+        <module name="ClassMemberImpliedModifier" />
         <!-- <module name="ClassTypeParameterName"/> -->
+        <module name="CommentsIndentation"/>
         <!-- Not everything static and final is to my mind a constant: -->
         <!-- <module name="ConstantName"/> -->
         <module name="EmptyBlock">
@@ -27,7 +33,25 @@
             <!-- Remove case insensitivity.  Why is it a problem to have a name Record? -->
             <property name="format" value="^(?!(record|yield|var|permits|sealed|_)$).+$"/>
         </module>
+        <module name="ImportOrder">
+            <property name="groups" value="/^(?!java\.)/,/^java\./"/>
+            <property name="separated" value="true"/>
+        </module>
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="violateImpliedAbstractMethod" value="false"/>
+        </module>
         <module name="InterfaceTypeParameterName"/>
+        <module name="InvalidJavadocPosition"/>
+        <module name="JavadocBlockTagLocation"/>
+        <module name="JavadocContentLocationCheck"/>
+        <module name="JavadocMethod"/>
+        <module name="JavadocMissingLeadingAsterisk"/>
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocParagraph"/>
+        <module name="JavadocStyle"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocType"/>
+        <module name="JavadocVariable"/>
         <module name="LeftCurly">
             <property name="option" value="nl"/>
             <!-- Pretty much everything except lambdas and anonymous inner classes -->
@@ -36,11 +60,19 @@
         <module name="MemberName"/>
         <module name="MethodName"/>
         <module name="MethodTypeParameterName"/>
+        <module name="MissingJavadocMethod"/>
+        <module name="MissingJavadocPackage"/>
+        <module name="MissingJavadocType"/>
+        <module name="ModifierOrder"/>
+        <module name="NonEmptyAtclauseDescription"/>
         <module name="PackageName"/>
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>
         </module>
+        <module name="SingleLineJavadoc"/>
         <module name="StaticVariableName"/>
+        <module name="SummaryJavadocCheck"/>
         <module name="TypeName"/>
     </module>
     <module name="RegexpHeader">

@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-import com.eponymouse.testjavafx.junit4.ApplicationTest;
+import org.testjavafx.junit4.ApplicationTest;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.shape.Rectangle;

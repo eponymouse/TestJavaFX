@@ -11,18 +11,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package com.eponymouse.testjavafx;
 
-public enum Motion
-{
-    TELEPORT,
-    STRAIGHT_LINE,
-    HORIZONTAL_FIRST,
-    VERTICAL_FIRST;
-
-    @SuppressWarnings("checkstyle:MethodName")
-    public static Motion DEFAULT()
-    {
-        return STRAIGHT_LINE;
-    }
-}
+/**
+ * Helper classes for testing with Junit 4.
+ */
+package org.testjavafx.junit4;
