@@ -270,7 +270,8 @@ public class FxRobot implements FxRobotInterface
             Platform.runLater(() -> {
                 Point2D curPos = actualRobot.getMousePosition();
                 double pixelsPerSecond = 500;
-                double seconds = screenPosition.distance(curPos) / pixelsPerSecond;
+                // We make sure there's at least one keyframe:
+                double seconds = Math.max(1.0/16.0, screenPosition.distance(curPos) / pixelsPerSecond);
                 Timeline t = new Timeline();
 
                 for (double s = 0; s < seconds; s += 1.0/32.0)
