@@ -2,9 +2,9 @@
  * TestJavaFX: Testing for JavaFX applications
  * Copyright (c) Neil Brown, 2022.
  *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
  * European Commission - subsequent versions of the EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
@@ -13,52 +13,107 @@
  */
 package org.testjavafx;
 
-import org.testjavafx.node.NodeQuery;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Window;
+import org.testjavafx.node.NodeQuery;
 
 import java.util.function.Predicate;
 
 /**
  * The main interface with all the methods available to
  * call to fake GUI events.
- * 
- * See the subclasses {@link FXRobotInterfaceKeyboard} and
+ *
+ * <p>See the subclasses {@link FXRobotInterfaceKeyboard} and
  * {@link FxRobotInterfaceMouse} for documentation on keyboard
  * and mouse events respectively.
- * 
- * Any method that returns FxRobotInterface returns this
- * for easy chaining.
+ *
+ * <p>Some of the methods in these classes are default and some are
+ * not.  In general this is just a matter of convenience of implementation
+ * as to whether they are defined here (or in superclasses) as default,
+ * or left to be defined in the child FxRobot concrete class.  You should
+ * ultimately only call the methods via the FxRobot implementation so it
+ * does not really matter.
+ *
+ * <p>Any method (including it the superclasses) that returns
+ * FxRobotInterface returns this object for easy chaining.
  */
 public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>, FxRobotInterfaceWindow<FxRobotInterface>
 {
     /**
      * Sleep for the given number of milliseconds.
-     * 
-     * This method is safe to call on the FX thread,
+     *
+     * <p>This method is safe to call on the FX thread,
      * although you probably don't want to block that
      * thread.
+     *
+     * @param milliseconds The number of milliseconds to sleep for.
+     * @return This object for easy chaining.
      */
-    FxRobotInterface sleep(int milliseconds);
+    public default FxRobotInterface sleep(int milliseconds)
+    {
+        try
+        {
+            Thread.sleep(milliseconds);
+        }
+        catch (InterruptedException e)
+        {
+            // Just cancel the sleep, I guess
+        }
+        return this;
+    }
 
-    public Window targetWindow();
+    /**
+     * This is a convenience method to aid migration from TestFX.  Note
+     * that its behaviour is different to TestFX.  This method calls
+     * {@link #focusedWindow()} -- see the documentation for that method
+     * to understand the difference.
+     *
+     * @return The return value of calling {@link #focusedWindow()}
+     */
+    @Deprecated
+    public default Window targetWindow()
+    {
+        return focusedWindow();
+    }
 
+    /**
+     * Start a node query using the given query.  See {@link NodeQuery} for
+     * more information on node queries.
+     *
+     * <p>This method can be called from any thread.
+     *
+     * @param query The query (e.g. CSS selector) to use for the query.
+     * @return The NodeQuery corresponding to executing this query in the future.
+     */
     public NodeQuery lookup(String query);
 
+    /**
+     * Start a node query by (at the time of executing the query) filtering
+     * all nodes in all showing windows according to the given predicate.
+     *
+     * <p>This method can be called from any thread.  The given predicate will
+     * only be run on the FX thread, and will not have been run at the time of return
+     * from this function (see {@link NodeQuery} for more information on queries).
+     *
+     * @param nodePredicate The test to apply to all nodes, in any windows,
+     *                      anywhere down the tree.
+     * @return A query that will execute the given predicatee on all nodes,
+     *         in any windows, anywhere down the tree.
+     */
     public NodeQuery lookup(Predicate<Node> nodePredicate);
 
     /**
      * Starts a NodeQuery search with the given nodes as an initial result set.
-     * 
-     * So calling from(myNodes).queryAll() is equivalent to calling
+     *
+     * <p>So calling from(myNodes).queryAll() is equivalent to calling
      * Set.of(myNodes).  But calling from(myNodes).lookup(".wide").queryAll() will find
      * all the nodes anywhere within myNodes with the style-class wide.
-     * 
-     * This method can be called from any thread.
-     * 
+     *
+     * <p>This method can be called from any thread.
+     *
      * @param useAsRoots The node or nodes to use as the start of the NodeQuery search.
-     *                   Calling it with an empty list will give a NodeQuery with no results. 
+     *                   Calling it with an empty list will give a NodeQuery with no results.
      * @return The NodeQuery with the given nodes as the initial results.
      */
     public NodeQuery from(Node... useAsRoots);
@@ -66,19 +121,37 @@ public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterf
     /**
      * Gets the centre of the given Node's bounds as
      * a coordinate on the screen.
-     * 
-     * This method is safe to call on the FX thread.  If
+     *
+     * <p>This method is safe to call on the FX thread.  If
      * called on another thread it waits to access the bounds
      * on the FX thread, and will block if the FX thread
      * is busy.
-     * 
+     *
      * @param node The node to fetch the centre coordinates for.
-     * @return The centre of the node as screen coordinates.
+     * @return The centre of the node as screen coordinates, according
+     *         to its bounds.
      */
     public Point2D point(Node node);
 
+    /**
+     * Looks up the given node that then calculates its centre on the
+     * screen using its bounds.  Equivalent to calling:
+     *
+     * <p><code>point(lookup(query).queryWithRetry());</code>
+     *
+     * <p>If no such node is found (even with the retry), null is returned.
+     * If multiple nodes match the query, an arbitrary node is chosen.
+     *
+     * @param query The query to use to find the node.
+     * @return The centre (screen position) of the first found node's bounds, or null
+     *         if no such node is found.
+     */
     public default Point2D point(String query)
     {
-        return point(lookup(query).queryWithRetry());
+        Node node = lookup(query).queryWithRetry();
+        if (node == null)
+            return null;
+        else
+            return point(node);
     }
 }

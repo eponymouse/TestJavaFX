@@ -13,11 +13,11 @@
  */
 package org.testjavafx;
 
-import org.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import org.testjavafx.node.NodeQuery;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,10 +26,20 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * A NodeQueryImpl is a (re-)runnable query to get a list of nodes.  It will
+ * be (re-)run at some future time on the FX thread.  Filtering and subqueries
+ * are done by composing these future computations.  Nothing is actually run
+ * until {@link #query()} or {@link #queryWithRetry()} or {@link #queryAll()} are
+ * called.
+ */
 // package-visible
 class NodeQueryImpl implements NodeQuery
 {
-    // Will only be run on FX thread:
+    /**
+     * Gets the roots (really, the results) of the current query.
+     * Will only be run on FX thread.
+     */
     private final Supplier<ImmutableList<Node>> allRoots;
 
     NodeQueryImpl(Supplier<ImmutableList<Node>> allRoots)
@@ -56,13 +66,14 @@ class NodeQueryImpl implements NodeQuery
             fromChildren = ((Parent) n).getChildrenUnmodifiable().stream().flatMap(c -> applyPredicateThoroughly(c, nodePredicate));
         else
             fromChildren = Stream.empty();
-        
+
         if (nodePredicate.test(n))
             return Stream.concat(Stream.of(n), fromChildren);
         else
             return fromChildren;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Node> T query()
     {
@@ -72,6 +83,7 @@ class NodeQueryImpl implements NodeQuery
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Node> Set<T> queryAll()
     {

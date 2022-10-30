@@ -13,8 +13,8 @@
  */
 package org.testjavafx;
 
-import org.testjavafx.node.NodeQuery;
 import com.google.common.collect.ImmutableList;
+import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -32,8 +32,10 @@ import javafx.scene.robot.Robot;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.lang3.SystemUtils;
+import org.testjavafx.node.NodeQuery;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -43,23 +45,25 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * FxRobot is the central class of TestJavaFX that implements all the methods
  * to fake GUI events and perform GUI queries.  The simplest way to use it in
  * a test is to extend it.
- * 
+ *
  * <p>Generally, you test JavaFX GUIs from a new thread, NOT from the FX thread.
- * If you test from the FX thread then the event handlers for keyboard, mouse, 
+ * If you test from the FX thread then the event handlers for keyboard, mouse,
  * etc, cannot run because your test code is blocking the FX thread.  Each of the
  * methods describes (where relevant) the effect of running the code on or off
  * the FX thread.  Many of the methods will block until they can run some code
  * on the FX thread.
- * 
- * <p>Note that FxRobot has some internal state, so it is strongly recommended to
- * only have one instance in use at any one time.  If you have multiple instances
- * in parallel then they will interfere with each other's state.
- * 
+ *
+ * <p>Note that FxRobot has some internal state to track the GUI state, so it is
+ * strongly recommended to only have one instance in use at any one time.  If you
+ * have multiple instances in parallel then they will interfere with each other's
+ * state.
+ *
  * <p>All of FxRobot's public methods are overrides of the FxRobotInterface interface
  * (and its superclasses).  The documentation of all the methods is automatically
  * inherited from those classes.
@@ -80,7 +84,7 @@ public class FxRobot implements FxRobotInterface
      * Construct a new instance.  This can either be called on the FX thread
      * or another thread -- but if the latter, it will block until the FX thread
      * is free in order to create some of the internals.
-     * 
+     *
      * <p>If the FX toolkit has not been initialised before calling this constructor,
      * it will be launched by {@link FxThreadUtils}.
      */
@@ -130,7 +134,7 @@ public class FxRobot implements FxRobotInterface
             order.forEach(c -> actualRobot.keyRelease(c));
             pressedKeys.removeAll(order);
         });
-        
+
         FxThreadUtils.waitForFxEvents();
         return this;
     }
@@ -148,20 +152,6 @@ public class FxRobot implements FxRobotInterface
             sleep(millisecondDelay);
         });
         FxThreadUtils.waitForFxEvents();
-        return this;
-    }
-
-    @Override
-    public FxRobotInterface sleep(int millisecondDelay)
-    {
-        try
-        {
-            Thread.sleep(millisecondDelay);
-        }
-        catch (InterruptedException e)
-        {
-            // Just cancel the sleep, I guess
-        }
         return this;
     }
 
@@ -195,18 +185,11 @@ public class FxRobot implements FxRobotInterface
         String keyText = typed ? "" : keyCode.getName();
         return new KeyEvent(eventType, keyChar, keyText, keyCode, isShiftDown, isControlDown, isAltDown, isMetaDown);
     }
-    
+
     // Taken from TestFX:
     private EventTarget getEventTarget(Scene scene)
     {
         return scene.getFocusOwner() != null ? scene.getFocusOwner() : scene;
-    }
-    
-        
-    @Override
-    public Window targetWindow()
-    {
-        return focusedWindow();
     }
 
     @Override
@@ -231,6 +214,12 @@ public class FxRobot implements FxRobotInterface
     {
         ImmutableList<Node> allRoots = ImmutableList.copyOf(roots);
         return new NodeQueryImpl(() -> allRoots);
+    }
+
+    @Override
+    public NodeQuery from(Window window)
+    {
+        return new NodeQueryImpl(() -> ImmutableList.of(window.getScene().getRoot()));
     }
 
     @Override
@@ -307,7 +296,7 @@ public class FxRobot implements FxRobotInterface
             moveTo(new Point2D(FxThreadUtils.syncFx(actualRobot::getMouseX), screenPosition.getY()), Motion.STRAIGHT_LINE);
             moveTo(screenPosition, Motion.STRAIGHT_LINE);
         }
-        
+
         if (motion == Motion.STRAIGHT_LINE && !Platform.isFxApplicationThread())
         {
             CompletableFuture<Boolean> f = new CompletableFuture<>();
@@ -328,7 +317,7 @@ public class FxRobot implements FxRobotInterface
                         );
                     }));
                 }
-                        
+
                 t.setOnFinished(e -> {
                     // Make sure to always end on exact position:
                     actualRobot.mouseMove(screenPosition);
@@ -403,14 +392,21 @@ public class FxRobot implements FxRobotInterface
     {
         return FxThreadUtils.<Window>syncFx(() -> {
             List<Window> windows = Window.getWindows();
-            for (Window window : windows)
+            List<Window> focused = new ArrayList<>(windows.stream().filter(Window::isFocused).collect(Collectors.toList()));
+            // It seems that (only in Monocle?) multiple windows can claim to
+            // have focus when a main window shows sub-dialogs, so we have to manually
+            // try to work out the real focused window:
+            if (focused.size() > 1)
             {
-                if (window.isFocused())
-                {
-                    // Remember this:
-                    this.lastFocusedWindow = new WeakReference<>(window);
-                    return window;
-                }
+                // Remove any windows claiming to be focused which have a child
+                // window that is focused:
+                focused.removeIf(w -> focused.stream().anyMatch(parent -> parent instanceof Stage && ((Stage) parent).getOwner() == w));
+            }
+            if (focused.size() == 1)
+            {
+                // Remember this:
+                this.lastFocusedWindow = new WeakReference<>(focused.get(0));
+                return focused.get(0);
             }
             // No focused window; is the most recent one around?
             Window lastFocused = this.lastFocusedWindow == null ? null : this.lastFocusedWindow.get();
