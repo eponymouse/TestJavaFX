@@ -32,7 +32,9 @@
             <!-- Remove case insensitivity.  Why is it a problem to have a name Record? -->
             <property name="format" value="^(?!(record|yield|var|permits|sealed|_)$).+$"/>
         </module>
-        <module name="InterfaceMemberImpliedModifier"/>
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="violateImpliedAbstractMethod" value="false"/>
+        </module>
         <module name="InterfaceTypeParameterName"/>
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocBlockTagLocation"/>
