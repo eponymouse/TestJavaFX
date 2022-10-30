@@ -27,6 +27,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        # Needed to build Javadoc for pages:
+      - name: Load .env file
+        uses: xom9ikk/dotenv@eff1dce037c4c0143cc4180a810511024c2560c0
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.java_version }}
+          distribution: 'temurin'
+          java-package: jdk
+          architecture: x64
+          cache: gradle        
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@859c33240bd026ce8d5f711f5adcc65c2f8eafc1
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
+        with:
+          arguments: javadoc --info --stacktrace --no-daemon          
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Build with Jekyll
@@ -34,6 +51,9 @@ jobs:
         with:
           source: ./
           destination: ./_site
+      - name: Copy Javadoc
+        run: |
+          cp -R testjavafx-core/build/docs/javadoc ./_site/latest-testjavafx-core       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
