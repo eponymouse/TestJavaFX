@@ -98,7 +98,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after releasing all the buttons.
      *
-     * @param node The node to click on.  Note that if there any other nodes
+     * @param query The query for the node to click on.  Note that if there any other nodes
      *             in front of this node, they may receive the click instead;
      *             the mouse is clicked at the centre of the node but does not
      *             guarantee that this event will receive the click.
@@ -108,43 +108,138 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      */
     public T clickOn(String query, MouseButton... mouseButtons);
 
+    /**
+     * Clicks on the given screen position, using the given mouse buttons.
+     * Calling with empty mouse buttons will click using MouseButton.PRIMARY.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after releasing all the buttons.
+     *
+     * @param screenPosition The screen position to click on.
+     * @param mouseButtons The buttons to click.  If left empty, MouseButton.PRIMARY
+     *                     will be clicked.
+     * @return This object, for easy chaining.
+     */
     public default T clickOn(Point2D screenPosition, MouseButton... mouseButtons)
     {
         moveTo(screenPosition);
         return clickOn(mouseButtons);
     }
 
+    /**
+     * Clicks the mouse at the current position, using the given mouse buttons.
+     * Calling with empty mouse buttons will click using MouseButton.PRIMARY.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after releasing all the buttons.
+     *
+     * @param mouseButtons The buttons to click.  If left empty, MouseButton.PRIMARY
+     *                     will be clicked.
+     * @return This object, for easy chaining.
+     */
     public T clickOn(MouseButton... mouseButtons);
 
+    /**
+     * Moves to the centre of the result of the query using the default
+     * {@link Motion}.
+     * 
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param query The query to use, with retrying. 
+     * @return This object, for easy chaining.
+     */
     public default T moveTo(String query)
     {
         return moveTo(query, Motion.DEFAULT());
     }
 
+    /**
+     * Moves to the centre of the node using the default
+     * {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param node The target node to move to the centre of, according to its bounds. 
+     * @return This object, for easy chaining.
+     */
     public T moveTo(Node node);
 
+    /**
+     * Moves to the given screen position using the default {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param screenPosition The screen position to move to. 
+     * @return This object, for easy chaining.
+     */
     public default T moveTo(Point2D screenPosition)
     {
         return moveTo(screenPosition, Motion.DEFAULT());
     }
 
+    /**
+     * Moves to the given screen position using the default {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param screenX The screen X position to move to.
+     * @param screenY The screen Y position to move to.
+     * @return This object, for easy chaining.
+     */
     public default T moveTo(double screenX, double screenY)
     {
         return moveTo(new Point2D(screenX, screenY));
     }
 
+    /**
+     * Moves by the given amount using the default {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param x The X amount to move by.
+     * @param y The Y amount to move by.
+     * @return This object, for easy chaining.
+     */
     public T moveBy(double x, double y);
 
+    /**
+     * Moves to the centre of the result of the query using the given
+     * {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param query The query to use, with retrying. 
+     * @param motion The motion to use for the movement.
+     * @return This object, for easy chaining.
+     */
     public T moveTo(String query, Motion motion);
 
+    /**
+     * Moves to the given screen position using the given
+     * {@link Motion}.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after moving.
+     *
+     * @param screenPosition The screen position to move to. 
+     * @param motion The motion to use for the movement.
+     * @return This object, for easy chaining.
+     */
     public T moveTo(Point2D screenPosition, Motion motion);
 
     /**
-     * Starts a drag at the current mouse position.  This is a synonym for
-     * {@link #press(MouseButton...)}
+     * Starts a drag at the current mouse position.  This is actually a synonym for
+     * {@link #press(MouseButton...)}.
      *
-     * @param mouseButtons
-     * @return
+     * @param mouseButtons The buttons to press.  If left empty, MouseButton.PRIMARY
+     *                     will be pressed.
+     * @return This object, for easy chaining.
      */
     public default T drag(MouseButton... mouseButtons)
     {
@@ -154,11 +249,13 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     /**
      * Moves the mouse to the given position then starts a drag by pressing the
      * given mouse buttons.  This is equivalent to calling {@link #moveTo(Point2D)}
-     * followed by {@link #press(MouseButton...)}.
+     * followed by {@link #press(MouseButton...)}.  To drag <i>to</i> a specific position,
+     * then call {@link #dropTo(Point2D)}.
      *
-     * @param from
-     * @param mouseButtons
-     * @return
+     * @param from The screen position to <i>start</i> the drag at.
+     * @param mouseButtons The buttons to press.  If left empty, MouseButton.PRIMARY
+     *                     will be pressed.
+     * @return This object, for easy chaining.
      */
     public default T drag(Point2D from, MouseButton... mouseButtons)
     {
@@ -168,7 +265,9 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     /**
      * Drops the item at the current mouse position.  This is a synonym for
-     * {@link #release(MouseButton...)}
+     * {@link #release(MouseButton...)} with empty arguments.
+     *
+     * @return This object, for easy chaining.
      */
     public default T drop()
     {
@@ -179,8 +278,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * Drops the item at the given mouse position.  This is equivalent to calling
      * {@link #moveTo(Point2D)} followed by {@link #release(MouseButton...)}
      *
-     * @param to
-     * @return
+     * @param to The screen position to move to before releasing the buttons.
+     * @return This object, for easy chaining.
      */
     public default T dropTo(Point2D to)
     {
@@ -188,26 +287,101 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         return release(new MouseButton[0]);
     }
 
-
+    /**
+     * Scrolls by the given amount vertically.
+     * 
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param verticalAmount The amount to scroll by, positive is one direction,
+     *                       negative the other.
+     * @return This object, for easy chaining.
+     */
     public T scroll(int verticalAmount);
 
+    /**
+     * Scrolls in the given vertical direction.
+     *
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param verticalDirection The direction to scroll in.
+     * @return This object, for easy chaining.
+     */
     public default T scroll(VerticalDirection verticalDirection)
     {
         return scroll(1, verticalDirection);
     }
 
+    /**
+     * Scrolls the given amount in the given vertical direction.
+     *
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param amount The amount to scroll by
+     * @param verticalDirection The direction to scroll in.
+     * @return This object, for easy chaining.
+     */
     public default T scroll(int amount, VerticalDirection verticalDirection)
     {
         return scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
     }
 
+    /**
+     * Scrolls by the given amount horizontally.  This is done by holding
+     * shift while scrolling, so the shift key will be released after this
+     * method.
+     *
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param horizontalAmount The amount to scroll by, positive is one direction,
+     *                       negative the other.
+     * @return This object, for easy chaining.
+     */
     public T scrollHorizontal(int horizontalAmount);
 
+    /**
+     * Scrolls in the given direction horizontally.  This is done by holding
+     * shift while scrolling, so the shift key will be released after this
+     * method.
+     *
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param horizontalDirection The direction to scroll in.
+     * @return This object, for easy chaining.
+     */
     public default T scroll(HorizontalDirection horizontalDirection)
     {
         return scroll(1, horizontalDirection);
     }
 
+    /**
+     * Scrolls the given amount in the given horizontal direction.  This is
+     * done by holding shift while scrolling, so the shift key will be released 
+     * after this method.
+     *
+     * <p>Note that I believe the amount can be interpreted differently
+     * on different platforms.  On macOS there is a setting to invert
+     * the mouse wheel and I think that inverts what this parameter means.
+     * At the moment, this is not corrected for.
+     *
+     * @param amount The amount to scroll by
+     * @param horizontalDirection The direction to scroll in.
+     * @return This object, for easy chaining.
+     */
     public default T scroll(int amount, HorizontalDirection horizontalDirection)
     {
         return scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
