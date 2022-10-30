@@ -28,6 +28,11 @@
             <property name="format" value="^(?!(record|yield|var|permits|sealed|_)$).+$"/>
         </module>
         <module name="InterfaceTypeParameterName"/>
+        <module name="LeftCurly">
+            <property name="option" value="nl"/>
+            <!-- Pretty much everything except lambdas and anonymous inner classes -->
+            <property name="tokens" value="ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_DEF,INTERFACE_DEF,LITERAL_CATCH,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,STATIC_INIT,RECORD_DEF"/>
+        </module>
         <module name="MemberName"/>
         <module name="MethodName"/>
         <module name="MethodTypeParameterName"/>

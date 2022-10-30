@@ -25,7 +25,8 @@ import org.junit.Before;
 public abstract class ApplicationTest extends FxRobot
 {
     @Before
-    public final void internalBefore() throws Exception {
+    public final void internalBefore() throws Exception
+    {
         FxThreadUtils.syncFx(() -> {
             Platform.setImplicitExit(false);
             new JUnitApplication(this).start(new Stage());
@@ -35,7 +36,8 @@ public abstract class ApplicationTest extends FxRobot
     }
 
     @After
-    public final void internalAfter() throws Exception {
+    public final void internalAfter() throws Exception
+    {
         FxThreadUtils.syncFx(() -> {
             release(new KeyCode[0]);
             release(new MouseButton[0]);

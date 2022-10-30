@@ -130,22 +130,27 @@ public class FxRobot implements FxRobotInterface
     }
 
     // Taken from TestFX:
-    private KeyEvent createKeyEvent(EventType<KeyEvent> eventType, KeyCode keyCode, String character) {
+    private KeyEvent createKeyEvent(EventType<KeyEvent> eventType, KeyCode keyCode, String character)
+    {
         boolean pressed = eventType == KeyEvent.KEY_PRESSED;
         boolean isShiftDown = false;
         boolean isControlDown = false;
         boolean isAltDown = false;
         boolean isMetaDown = false;
-        if (keyCode == KeyCode.SHIFT) {
+        if (keyCode == KeyCode.SHIFT)
+        {
             isShiftDown = pressed;
         }
-        if (keyCode == KeyCode.CONTROL) {
+        if (keyCode == KeyCode.CONTROL)
+        {
             isControlDown = pressed;
         }
-        if (keyCode == KeyCode.ALT) {
+        if (keyCode == KeyCode.ALT)
+        {
             isAltDown = pressed;
         }
-        if (keyCode == KeyCode.META) {
+        if (keyCode == KeyCode.META)
+        {
             isMetaDown = pressed;
         }
 
@@ -156,7 +161,8 @@ public class FxRobot implements FxRobotInterface
     }
     
     // Taken from TestFX:
-    private EventTarget getEventTarget(Scene scene) {
+    private EventTarget getEventTarget(Scene scene)
+    {
         return scene.getFocusOwner() != null ? scene.getFocusOwner() : scene;
     }
     

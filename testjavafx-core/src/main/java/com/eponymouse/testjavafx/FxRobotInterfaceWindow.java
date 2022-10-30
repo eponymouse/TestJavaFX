@@ -25,44 +25,55 @@ import java.util.List;
 
 public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
 {
-    public default List<Window> listTargetWindows() {
+    public default List<Window> listTargetWindows()
+    {
         return fetchWindowsByProximityTo(focusedWindow());
     }
     
-    private List<Window> fetchWindowsByProximityTo(Window targetWindow) {
+    private List<Window> fetchWindowsByProximityTo(Window targetWindow)
+    {
         List<Window> windows = listWindows();
         return orderWindowsByProximityTo(targetWindow, windows);
     }
 
-    private List<Window> orderWindowsByProximityTo(Window targetWindow, List<Window> windows) {
+    private List<Window> orderWindowsByProximityTo(Window targetWindow, List<Window> windows)
+    {
         List<Window> copy = new ArrayList<>(windows);
         copy.sort(Comparator.comparingInt(w -> calculateWindowProximityTo(targetWindow, w)));
         return Collections.unmodifiableList(copy);
     }
 
-    private int calculateWindowProximityTo(Window targetWindow, Window window) {
-        if (window == targetWindow) {
+    private int calculateWindowProximityTo(Window targetWindow, Window window)
+    {
+        if (window == targetWindow)
+        {
             return 0;
         }
-        if (isOwnerOf(window, targetWindow)) {
+        if (isOwnerOf(window, targetWindow))
+        {
             return 1;
         }
         return 2;
     }
 
-    private boolean isOwnerOf(Window window, Window targetWindow) {
+    private boolean isOwnerOf(Window window, Window targetWindow)
+    {
         Window ownerWindow = retrieveOwnerOf(window);
-        if (ownerWindow == targetWindow) {
+        if (ownerWindow == targetWindow)
+        {
             return true;
         }
         return ownerWindow != null && isOwnerOf(ownerWindow, targetWindow);
     }
 
-    private Window retrieveOwnerOf(Window window) {
-        if (window instanceof Stage) {
+    private Window retrieveOwnerOf(Window window)
+    {
+        if (window instanceof Stage)
+        {
             return ((Stage) window).getOwner();
         }
-        if (window instanceof PopupWindow) {
+        if (window instanceof PopupWindow)
+        {
             return ((PopupWindow) window).getOwnerWindow();
         }
         return null;
