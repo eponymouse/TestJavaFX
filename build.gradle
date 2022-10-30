@@ -1,9 +1,29 @@
-group 'com.eponymouse'
-version '0.1'
-
-repositories {
-    mavenCentral()
+plugins {
+    id 'org.openjfx.javafxplugin' version '0.0.13' apply false
+    id "com.github.ben-manes.versions" version "0.43.0"
 }
 
-dependencies {
+subprojects { subproject ->
+    group 'com.eponymouse'
+    version '0.1'
+    
+    apply plugin: 'org.openjfx.javafxplugin'
+
+    javafx {
+        version = '11'
+        modules = [ 'javafx.base', 'javafx.graphics' ]
+        configuration = 'compileOnly'
+    }
+    
+    repositories {
+        mavenCentral()
+    }
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+// Ignore JavaFX updates as we are deliberately pegged to an older version:
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        it.candidate.group.equals("org.openjfx")
+    }
 }

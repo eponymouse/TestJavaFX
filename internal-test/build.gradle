@@ -2,14 +2,6 @@ import java.time.Duration
 
 plugins {
     id 'java-library'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
-}
-
-group 'com.eponymouse'
-version '0.1'
-
-repositories {
-    mavenCentral()
 }
 
 javafx {
