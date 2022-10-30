@@ -46,5 +46,6 @@ jobs:
     needs: build
     steps:
       - name: Deploy to GitHub Pages
+        if: github.event.repository.fork == false
         id: deployment
         uses: actions/deploy-pages@v1
