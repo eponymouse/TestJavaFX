@@ -1,3 +1,6 @@
+/**
+ * Helper classes for testing with JUnit 4.
+ */
 // javac complains on modules named junit4, see https://bugs.openjdk.org/browse/JDK-8216185
 module org.testjavafx.junitFour {
     exports org.testjavafx.junit4;

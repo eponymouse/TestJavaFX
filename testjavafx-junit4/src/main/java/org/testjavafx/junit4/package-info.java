@@ -11,33 +11,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package org.testjavafx.junit4;
-
-import javafx.application.Application;
-import javafx.stage.Stage;
 
 /**
- * An internal helper class.
+ * Helper classes for testing with Junit 4.
  */
-class JUnitApplication extends Application
-{
-    /** The user application to delegate to. */
-    private final ApplicationTest userApplication;
-
-    JUnitApplication(ApplicationTest userApplication)
-    {
-        this.userApplication = userApplication;
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-        userApplication.start(primaryStage);
-    }
-
-    @Override
-    public void stop() throws Exception
-    {
-        userApplication.stop();
-    }
-}
+package org.testjavafx.junit4;
