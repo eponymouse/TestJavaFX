@@ -38,3 +38,9 @@ tasks.named("dependencyUpdates").configure {
         it.candidate.group.equals("org.openjfx")
     }
 }
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.addBooleanOption('Xdoclint:all', true)
+    options.addBooleanOption('html5', true)
+}
