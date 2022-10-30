@@ -14,7 +14,6 @@
 package org.testjavafx;
 
 import com.google.common.collect.ImmutableList;
-import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -29,6 +28,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.lang3.SystemUtils;

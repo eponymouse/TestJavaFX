@@ -3,7 +3,7 @@
         "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
         "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
-    <module name="JavadocPackage"/>    
+    <module name="JavadocPackage"/>
     <module name="SuppressWarningsFilter"/>
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
@@ -17,6 +17,7 @@
             <property name="allowInSwitchCase" value="true"/>
         </module>
         <module name="AvoidStarImport"/>
+        <module name="AvoidStaticImport"/>
         <module name="ClassMemberImpliedModifier" />
         <!-- <module name="ClassTypeParameterName"/> -->
         <module name="CommentsIndentation"/>
@@ -31,6 +32,10 @@
         <module name="IllegalIdentifierName">
             <!-- Remove case insensitivity.  Why is it a problem to have a name Record? -->
             <property name="format" value="^(?!(record|yield|var|permits|sealed|_)$).+$"/>
+        </module>
+        <module name="ImportOrder">
+            <property name="groups" value="/^(?!java\.)/,/^java\./"/>
+            <property name="separated" value="true"/>
         </module>
         <module name="InterfaceMemberImpliedModifier">
             <property name="violateImpliedAbstractMethod" value="false"/>
