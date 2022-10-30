@@ -20,12 +20,66 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 
+/**
+ * A set of methods for testing mouse interactions.
+ * All the methods return this for easy chaining.
+ *
+ * <p>Calling these methods from the FX thread is safe
+ * but the events will not have been processed on return
+ * from the methods.  The intended use is calling from another
+ * thread, where the methods should have been processed by
+ * the time the method returns.  See {@link FxThreadUtils#waitForFxEvents()}
+ * for more information.
+ *
+ * @param <T> The type of this object to be returned from all the methods.
+ *            This will be {@link FxRobotInterface} if you use these methods via
+ *            {@link FxRobotInterface} or {@link FxRobot}.
+ */
 public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 {
+    /**
+     * Presses (and holds down) the given mouse buttons in the given order.
+     * Calling with empty parameters is equivalent to calling with
+     * MouseButton.PRIMARY.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after pressing all the buttons.
+     *
+     * @param buttons The buttons to press and keep held down.  Duplicate entries will
+     *                have an undefined effect.
+     * @return This object, for easy chaining.
+     */
     public T press(MouseButton... buttons);
 
+    /**
+     * The mouse buttons to release.  Calling without parameters releases all the
+     * mouse buttons that were being held down by previous calls to {@link #press(MouseButton...)}.
+     *
+     * <p>Calling with buttons that are not currently held down will have an undefined effect.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after releasing all the buttons.
+     *
+     * @param buttons The buttons to release.
+     * @return This object, for easy chaining.
+     */
     public T release(MouseButton... buttons);
 
+    /**
+     * Clicks on the centre of the given node, using the given mouse buttons.
+     * Calling with empty mouse buttons will click using MouseButton.PRIMARY.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after releasing all the buttons.
+     *
+     * @param node The node to click on.  Note that if there any other nodes
+     *             in front of this node, they may receive the click instead;
+     *             the mouse is clicked at the centre of the node but does not
+     *             guarantee that this event will receive the click.
+     * @param mouseButtons The buttons to click.  If left empty, MouseButton.PRIMARY
+     *                     will be clicked.
+     * @return This object, for easy chaining.
+     */
     public default T clickOn(Node node, MouseButton... mouseButtons)
     {
         if (node == null)
@@ -37,6 +91,21 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         return clickOn(p, mouseButtons);
     }
 
+    /**
+     * Clicks on the centre of the result of the query, using the given mouse buttons.
+     * Calling with empty mouse buttons will click using MouseButton.PRIMARY.
+     *
+     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
+     * after releasing all the buttons.
+     *
+     * @param node The node to click on.  Note that if there any other nodes
+     *             in front of this node, they may receive the click instead;
+     *             the mouse is clicked at the centre of the node but does not
+     *             guarantee that this event will receive the click.
+     * @param mouseButtons The buttons to click.  If left empty, MouseButton.PRIMARY
+     *                     will be clicked.
+     * @return This object, for easy chaining.
+     */
     public T clickOn(String query, MouseButton... mouseButtons);
 
     public default T clickOn(Point2D screenPosition, MouseButton... mouseButtons)
@@ -86,7 +155,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * Moves the mouse to the given position then starts a drag by pressing the
      * given mouse buttons.  This is equivalent to calling {@link #moveTo(Point2D)}
      * followed by {@link #press(MouseButton...)}.
-     * 
+     *
      * @param from
      * @param mouseButtons
      * @return
@@ -109,7 +178,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     /**
      * Drops the item at the given mouse position.  This is equivalent to calling
      * {@link #moveTo(Point2D)} followed by {@link #release(MouseButton...)}
-     * 
+     *
      * @param to
      * @return
      */
@@ -118,29 +187,29 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
         moveTo(to, Motion.STRAIGHT_LINE);
         return release(new MouseButton[0]);
     }
-        
 
-    public void scroll(int verticalAmount);
-    
-    public default void scroll(VerticalDirection verticalDirection)
+
+    public T scroll(int verticalAmount);
+
+    public default T scroll(VerticalDirection verticalDirection)
     {
-        scroll(1, verticalDirection);
+        return scroll(1, verticalDirection);
     }
 
-    public default void scroll(int amount, VerticalDirection verticalDirection)
+    public default T scroll(int amount, VerticalDirection verticalDirection)
     {
-        scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
+        return scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
     }
-    
-    public void scrollHorizontal(int horizontalAmount);
 
-    public default void scroll(HorizontalDirection horizontalDirection)
+    public T scrollHorizontal(int horizontalAmount);
+
+    public default T scroll(HorizontalDirection horizontalDirection)
     {
-        scroll(1, horizontalDirection);
+        return scroll(1, horizontalDirection);
     }
-    
-    public default void scroll(int amount, HorizontalDirection horizontalDirection)
+
+    public default T scroll(int amount, HorizontalDirection horizontalDirection)
     {
-        scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
+        return scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
     }
 }

@@ -372,19 +372,21 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public void scroll(int verticalAmount)
+    public FxRobotInterface scroll(int verticalAmount)
     {
         FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(verticalAmount));
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
-    public void scrollHorizontal(int horizontalAmount)
+    public FxRobotInterface scrollHorizontal(int horizontalAmount)
     {
         press(KeyCode.SHIFT);
         FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(horizontalAmount));
         release(KeyCode.SHIFT);
         FxThreadUtils.waitForFxEvents();
+        return this;
     }
 
     @Override
