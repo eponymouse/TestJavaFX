@@ -17,10 +17,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.TextInputControl;
+import javafx.scene.text.Text;
 import org.testjavafx.node.NodeQuery;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -50,7 +54,19 @@ class NodeQueryImpl implements NodeQuery
     @Override
     public NodeQuery lookup(String query)
     {
-        return new NodeQueryImpl(() -> allRoots.get().stream().flatMap(n -> n.lookupAll(query).stream()).collect(ImmutableList.toImmutableList()));
+        if (query != null && (query.startsWith(".") || query.startsWith("#")))
+            return new NodeQueryImpl(() -> allRoots.get().stream().flatMap(n -> n.lookupAll(query).stream()).collect(ImmutableList.toImmutableList()));
+        else
+            return lookup(n -> {
+                if (n instanceof Labeled)
+                    return Objects.equals(((Labeled)n).getText(), query);
+                else if (n instanceof TextInputControl)
+                    return Objects.equals(((TextInputControl)n).getText(), query);
+                else if (n instanceof Text)
+                    return Objects.equals(((Text)n).getText(), query);
+                else
+                    return false;
+            });
     }
 
     @Override

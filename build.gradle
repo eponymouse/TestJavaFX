@@ -11,7 +11,7 @@ subprojects { subproject ->
 
     javafx {
         version = '11'
-        modules = [ 'javafx.base', 'javafx.graphics' ]
+        modules = [ 'javafx.base', 'javafx.controls', 'javafx.graphics' ]
         configuration = 'compileOnly'
     }
 

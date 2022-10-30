@@ -68,13 +68,17 @@ public interface NodeQuery
      * anywhere in the tree.  If you want to just filter the results without this
      * descent, use filter() instead.
      *
-     * <p>A query is a CSS selector as used by {@link Node#lookup(String)} -- it can be
-     * a name (without decoration), a style class (with "." prefix), an id (with "#" prefix),
-     * one of those with a pseudoclass (with a ":" prefix), and a combination using
-     * spaces or "&gt;" to chain them.
-     *
-     * <p>Note that plain text cannot be used to match the text of an item, although
-     * this may change in future if this is a desired feature.
+     * <p>A query can be:
+     * <ul>
+     *     <li>A CSS selector as used by {@link Node#lookup(String)} -- it can be
+     *     a name (without decoration), a style class (with "." prefix), an id (with "#" prefix),
+     *     one of those with a pseudoclass (with a ":" prefix), and a combination using
+     *     spaces or "&gt;" to chain them.</li>
+     *     <li>A text item to match exactly against a Labeled, TextInputControl or Text.
+     *     Note that some controls such as Button will match against this and their
+     *     inner label text will match too if you call {@link #queryAll()}.  However, the Button
+     *     (or parent) will be returned first by {@link #query()}.</li>
+     * </ul>
      *
      * @param query A query, as described above.
      * @return A new NodeQuery object representing this new search.  Note that the
