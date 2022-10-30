@@ -23,7 +23,7 @@ subprojects { subproject ->
     
     tasks.withType(Checkstyle) {
         exclude "**/module-info.java"
-        //exclude "build/**/*"
+        exclude "**/*Test.java"
     }
     
     repositories {
