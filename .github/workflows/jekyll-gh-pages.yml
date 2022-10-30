@@ -24,6 +24,7 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    if: github.event.repository.fork == false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,12 +54,14 @@ jobs:
           destination: ./_site
       - name: Copy Javadoc
         run: |
-          cp -R testjavafx-core/build/docs/javadoc ./_site/latest-testjavafx-core       
+          mkdir -p ./_site
+          cp -R ./testjavafx-core/build/docs/javadoc ./_site/latest-testjavafx-core       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
   # Deployment job
   deploy:
+    if: github.event.repository.fork == false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -66,6 +69,5 @@ jobs:
     needs: build
     steps:
       - name: Deploy to GitHub Pages
-        if: github.event.repository.fork == false
         id: deployment
         uses: actions/deploy-pages@v1
