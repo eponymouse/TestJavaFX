@@ -55,7 +55,7 @@ jobs:
       - name: Copy Javadoc
         run: |
           mkdir -p ./_site
-          cp -R ./testjavafx-core/build/docs/javadoc ./_site/latest-testjavafx-core       
+          sudo cp -R ./testjavafx-core/build/docs/javadoc ./_site/latest-testjavafx-core       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
