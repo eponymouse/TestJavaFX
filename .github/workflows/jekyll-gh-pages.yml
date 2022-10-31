@@ -45,6 +45,7 @@ jobs:
         with:
           arguments: javadoc --info --stacktrace --no-daemon          
       - name: Setup Pages
+        if: github.event.repository.fork == false
         uses: actions/configure-pages@v2
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
