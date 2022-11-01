@@ -24,9 +24,9 @@ import java.util.function.Predicate;
  * The main interface with all the methods available to
  * call to fake GUI events.
  *
- * <p>See the subclasses {@link FXRobotInterfaceKeyboard} and
+ * <p>See the subclasses {@link FxRobotInterfaceKeyboard} and
  * {@link FxRobotInterfaceMouse} for documentation on keyboard
- * and mouse events respectively.
+ * and mouse events respectively, and the subclass {@link FxRobotInterfaceWindow} for documentation on window lookup.
  *
  * <p>Some of the methods in these classes are default and some are
  * not.  In general this is just a matter of convenience of implementation
@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  * <p>Any method (including it the superclasses) that returns
  * FxRobotInterface returns this object for easy chaining.
  */
-public interface FxRobotInterface extends FXRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>, FxRobotInterfaceWindow<FxRobotInterface>
+public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterface>, FxRobotInterfaceMouse<FxRobotInterface>, FxRobotInterfaceWindow<FxRobotInterface>
 {
     /**
      * Sleep for the given number of milliseconds.
