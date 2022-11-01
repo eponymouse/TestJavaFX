@@ -1,0 +1,2 @@
+gem "github-pages", "~> 227", group: :jekyll_plugins
+gem 'jekyll-theme-cayman', group: :jekyll_plugins
