@@ -94,7 +94,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface push(KeyCode... keyCodes)
+    public FxRobotInterface tap(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         FxThreadUtils.syncFx(() -> {
