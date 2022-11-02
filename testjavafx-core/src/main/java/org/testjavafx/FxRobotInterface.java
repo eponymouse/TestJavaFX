@@ -13,12 +13,14 @@
  */
 package org.testjavafx;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Window;
 import org.testjavafx.node.NodeQuery;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * The main interface with all the methods available to
@@ -153,5 +155,72 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
             return null;
         else
             return point(node);
+    }
+
+    /**
+     * Waits until the given supplier returns true, by repeatedly retrying
+     * every 100ms for 8 seconds.
+     * 
+     * <p>If the condition still does not return true after all the retries,
+     * a {@link RuntimeException} (or some subclass) will be thrown.  A
+     * return without exception indicates that the check did return true.
+     *
+     * @param check The check to run on the FX thread.
+     * @return This, for easy chaining.
+     */
+    public default FxRobotInterface waitUntil(Supplier<Boolean> check)
+    {
+        if (!Platform.isFxApplicationThread())
+        {
+            for (int retries = 80; retries >= 0; retries--)
+            {
+                try
+                {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e)
+                {
+                    // Just cancel the sleep, we'll go round and retry anyway
+                }
+                if (FxThreadUtils.syncFx(check::get))
+                    return this;
+            }
+        }
+        else
+        {
+            if (check.get())
+                return this;
+        }
+        throw new RuntimeException("waitUntil() condition was not satisfied even after retries");
+    }
+
+    /**
+     * An instant query (without retrying) for whether a node is showing.
+     * Useful for use with {@link #waitUntil(Supplier)}.
+     * 
+     * <p>Safe for using from any thread, but off the FX thread it will block
+     * until it can run on the FX thread.
+     *
+     * @param query The query to run via {@link #lookup(String)}
+     * @return True if the query finds at least one node, false if no nodes are found.
+     */
+    public default boolean showing(String query)
+    {
+        return lookup(query).query() != null;
+    }
+
+    /**
+     * An instant query (without retrying) for whether a node is not showing.
+     * Useful for use with {@link #waitUntil(Supplier)}.
+     *
+     * <p>Safe for using from any thread, but off the FX thread it will block
+     * until it can run on the FX thread.
+     *
+     * @param query The query to run via {@link #lookup(String)}
+     * @return True if the query finds no nodes, false if at least one node is found.
+     */
+    public default boolean notShowing(String query)
+    {
+        return lookup(query).query() == null;
     }
 }

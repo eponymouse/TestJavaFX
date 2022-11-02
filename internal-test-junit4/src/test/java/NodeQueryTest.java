@@ -129,4 +129,30 @@ public class NodeQueryTest extends ApplicationTest
             sleep(1000);
         }
     }
+
+    @Test
+    public void golden2()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            long t = System.currentTimeMillis();
+            waitUntil(() -> showing(".golden"));
+            t = System.currentTimeMillis() - t;
+            MatcherAssert.assertThat("Loop " + i, t, Matchers.lessThan(2000L));
+            sleep(1000);
+        }
+    }
+
+    @Test
+    public void golden3()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            long t = System.currentTimeMillis();
+            waitUntil(() -> notShowing(".golden"));
+            t = System.currentTimeMillis() - t;
+            MatcherAssert.assertThat("Loop " + i, t, Matchers.lessThan(2000L));
+            sleep(1000);
+        }
+    }
 }

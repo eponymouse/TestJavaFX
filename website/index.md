@@ -1,7 +1,18 @@
 TestJavaFX
 ===
 
-Description goes here
+Testing programs is a good idea, and modern Continuous Integration (CI) servers like Github Actions or Gitlab CI make it easy to run automated tests.  However, testing GUI program automatically is difficult.  Inspired by an earlier library, <a href="https://github.com/TestFX/TestFX">TestFX</a>, TestJavaFX uses a similar API to support testing <a href="https://openjfx.io/">JavaFX</a> programs.
+
+For example, imagine you want to test writing in a couple of text fields and clicking OK:
+
+    clickOn("#firstname");
+    write("Scott");
+    tap(KeyCode.TAB);
+    write("Summers");
+    clickOn("Ok");
+    waitUntil(() -> notShowing("Ok"));
+
+For more methods, see the core <a href="/latest-testjavafx-core/org.testjavafx.core/org/testjavafx/FxRobotInterface.html">FxRobotInterface</a> class.
 
 Add dependency
 ---
