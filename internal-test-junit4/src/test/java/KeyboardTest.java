@@ -54,23 +54,23 @@ public class KeyboardTest extends ApplicationTest
         this.stage.show();
         System.out.println("Started");
     }
-    
+
     public synchronized void stop()
     {
         keyEvents.clear();
         System.out.println("Stopped");
     }
-    
+
     public synchronized KeyEvent[] getKeyEvents()
     {
         return this.keyEvents.toArray(KeyEvent[]::new);
     }
-    
+
     private static String elaborate(String s)
     {
         return "\"" + s + "\" [" + s.codePoints().mapToObj(Integer::toString).collect(Collectors.joining(", ")) + "]";
     }
-    
+
     public static Matcher<KeyEvent> isKey(KeyCode keyCode)
     {
         return new CustomTypeSafeMatcher<KeyEvent>("Has key " + keyCode)
@@ -170,11 +170,22 @@ public class KeyboardTest extends ApplicationTest
     public void testSingleNonTypableKey()
     {
         push(KeyCode.ESCAPE);
-        MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
-            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_PRESSED)),
-            Matchers.allOf(isKey(KeyCode.UNDEFINED), Matchers.anyOf(isCharacter(""), isCharacter(Character.toString(27))), isText(""), isType(KeyEvent.KEY_TYPED)),
-            Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_RELEASED))
-        ));
+        if (Boolean.getBoolean("testjavafx.headless"))
+        {
+            // Monocle has different behaviour for escape:
+            MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+                Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_RELEASED))
+            ));
+        }
+        else
+        {
+            MatcherAssert.assertThat(getKeyEvents(), ArrayMatching.arrayContaining(
+                Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_PRESSED)),
+                Matchers.allOf(isKey(KeyCode.UNDEFINED), Matchers.anyOf(isCharacter(""), isCharacter(Character.toString(27))), isText(""), isType(KeyEvent.KEY_TYPED)),
+                Matchers.allOf(isKey(KeyCode.ESCAPE), isCharacter("\0"), Matchers.anyOf(isText(Character.toString(27)), isText("")), isType(KeyEvent.KEY_RELEASED))
+            ));
+        }
     }
 
     @Test
