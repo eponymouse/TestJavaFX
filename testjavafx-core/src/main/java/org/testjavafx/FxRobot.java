@@ -349,12 +349,6 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface moveTo(Node node)
-    {
-        return moveTo(point(node));
-    }
-
-    @Override
     public FxRobotInterface moveBy(double x, double y)
     {
         return moveTo(FxThreadUtils.syncFx(actualRobot::getMousePosition).add(x, y));

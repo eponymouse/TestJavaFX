@@ -97,7 +97,7 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
      * from this function (see {@link NodeQuery} for more information on queries).
      *
      * @param nodePredicate The test to apply to all nodes, in any windows,
-     *                      anywhere down the tree.
+     *                      anywhere down the tree.  Will be run on the FX thread.
      * @return A query that will execute the given predicatee on all nodes,
      *         in any windows, anywhere down the tree.
      */
