@@ -1,6 +1,6 @@
 /*
  * TestJavaFX: Testing for JavaFX applications
- * Copyright (c) Neil Brown, 2022.
+ * Copyright (c) TestFX Contributors 2013-2021 and Neil Brown, 2022.
  *
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
  * European Commission - subsequent versions of the EUPL (the "Licence");
@@ -17,6 +17,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
@@ -162,7 +164,26 @@ public class FxThreadUtils
         if (!dummyAppLaunched.getAndSet(true))
         {
             // Initialise FX toolkit:
-            new Thread(() -> Application.launch(DummyApplication.class)).start();
+            new Thread(() -> {
+                if (Boolean.getBoolean("testjavafx.headless"))
+                {
+                    // From TestFX:
+                    try
+                    {
+                        assignMonoclePlatform();
+                        assignHeadlessPlatform();
+                    }
+                    catch (ClassNotFoundException exception)
+                    {
+                        throw new IllegalStateException("Monocle headless platform not found - did you forget to add a dependency on monocle?", exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new RuntimeException(exception);
+                    }
+                }
+                Application.launch(DummyApplication.class);
+            }).start();
         }
         try
         {
@@ -172,6 +193,29 @@ public class FxThreadUtils
         {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void assignMonoclePlatform() throws Exception
+    {
+        Class<?> platformFactoryClass = Class.forName("com.sun.glass.ui.PlatformFactory");
+        Object platformFactoryImpl = Class.forName("com.sun.glass.ui.monocle.MonoclePlatformFactory").getDeclaredConstructor().newInstance();
+        assignPrivateStaticField(platformFactoryClass, "instance", platformFactoryImpl);
+    }
+
+    private static void assignHeadlessPlatform() throws Exception
+    {
+        Class<?> nativePlatformFactoryClass = Class.forName("com.sun.glass.ui.monocle.NativePlatformFactory");
+        Constructor<?> nativePlatformCtor = Class.forName("com.sun.glass.ui.monocle.HeadlessPlatform").getDeclaredConstructor();
+        nativePlatformCtor.setAccessible(true);
+        assignPrivateStaticField(nativePlatformFactoryClass, "platform", nativePlatformCtor.newInstance());
+    }
+
+    private static void assignPrivateStaticField(Class<?> clazz, String name, Object value) throws Exception
+    {
+        Field field = clazz.getDeclaredField(name);
+        field.setAccessible(true);
+        field.set(clazz, value);
+        field.setAccessible(false);
     }
 
     /**

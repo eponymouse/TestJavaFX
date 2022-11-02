@@ -7,7 +7,7 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v3
       - name: Load .env file
-        uses: xom9ikk/dotenv@eff1dce037c4c0143cc4180a810511024c2560c0        
+        uses: xom9ikk/dotenv@eff1dce037c4c0143cc4180a810511024c2560c0
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -39,6 +39,14 @@ jobs:
         run: |
           killall -SIGINT ffmpeg
           sleep 5
+      - name: Stop Xvfb
+        run: |
+          killall icewm
+          killall Xvfb
+      - name: Test headless with Gradle
+        uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
+        with:
+          arguments: --no-build-cache cleanTest build -PtestWithMonocle=true --info --stacktrace --no-daemon --scan
       - name: Archive video
         if: always()
         uses: actions/upload-artifact@v3
@@ -74,6 +82,10 @@ jobs:
         uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
         with:
           arguments: build --info --stacktrace --no-daemon --scan
+      - name: Test headless with Gradle
+        uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
+        with:
+          arguments: --no-build-cache cleanTest build -PtestWithMonocle=true --info --stacktrace --no-daemon --scan
       - name: Archive any heap dumps
         if: always()
         uses: actions/upload-artifact@v3
@@ -102,6 +114,10 @@ jobs:
         uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
         with:
           arguments: build --info --stacktrace --no-daemon --scan
+      - name: Test headless with Gradle
+        uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
+        with:
+          arguments: --no-build-cache cleanTest build -PtestWithMonocle=true --info --stacktrace --no-daemon --scan
       - name: Archive any heap dumps
         if: always()
         uses: actions/upload-artifact@v3

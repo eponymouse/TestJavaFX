@@ -17,7 +17,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.apache.commons:commons-lang3:3.12.0'
-    
+    // For testing with Monocle:
+    testImplementation 'org.testfx:openjfx-monocle:jdk-12.0.1+2'
 }
 
 test {
@@ -33,4 +34,13 @@ test {
     forkEvery = 1
     maxParallelForks = 1
     timeout = Duration.ofMinutes(10)
+
+    if ("true".equals(project.findProperty("testWithMonocle"))) {
+        jvmArgs += ['-Dtestjavafx.headless=true',
+                    '-Dprism.order=sw',
+                    '-Dprism.text=t2k',
+                    '-Dglass.platform=Monocle',
+                    '-Dmonocle.platform=Headless',
+                    '-Dheadless.geometry=1920x1200-32']
+    }
 }
