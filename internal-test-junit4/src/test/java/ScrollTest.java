@@ -40,6 +40,9 @@ public class ScrollTest extends ApplicationTest
     @Test
     public void vertTest()
     {
+        if (Boolean.getBoolean("testjavafx.headless"))
+            return;
+        
         clickOn(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
@@ -54,6 +57,9 @@ public class ScrollTest extends ApplicationTest
     @Test
     public void horizTest()
     {
+        if (Boolean.getBoolean("testjavafx.headless"))
+            return;
+        
         clickOn(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));

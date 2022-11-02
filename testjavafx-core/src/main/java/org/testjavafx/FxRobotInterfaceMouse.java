@@ -282,6 +282,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param verticalAmount The amount to scroll by, positive is one direction,
      *                       negative the other.
@@ -296,6 +298,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param verticalDirection The direction to scroll in.
      * @return This object, for easy chaining.
@@ -312,6 +316,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param amount The amount to scroll by
      * @param verticalDirection The direction to scroll in.
@@ -331,6 +337,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param horizontalAmount The amount to scroll by, positive is one direction,
      *                       negative the other.
@@ -347,6 +355,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param horizontalDirection The direction to scroll in.
      * @return This object, for easy chaining.
@@ -365,6 +375,8 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
      * At the moment, this is not corrected for.
+     * 
+     * <p>Note also that scrolling doesn't seem to work on Monocle.
      *
      * @param amount The amount to scroll by
      * @param horizontalDirection The direction to scroll in.
