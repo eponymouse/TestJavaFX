@@ -30,18 +30,36 @@ import javafx.scene.input.KeyCode;
  *            This will be {@link FxRobotInterface} if you use these methods via
  *            {@link FxRobotInterface} or {@link FxRobot}.
  */
-public interface FXRobotInterfaceKeyboard<T extends FXRobotInterfaceKeyboard<T>>
+public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
 {
     /**
-     * Presses all the keys in order, then releases
+     * Taps the given keys.  A synonym for {@link #tap(KeyCode...)}, for compatibility with TestFX.
+     * 
+     * <p>Presses all the keys in order, then releases
      * them all in reverse order, then calls
      * {@link FxThreadUtils#waitForFxEvents()}.
      *
      * @param keyCodes The key codes to press then release.
      * @return This object, for easy chaining of methods.
      */
-    public T push(KeyCode... keyCodes);
+    public default T push(KeyCode... keyCodes)
+    {
+        return tap(keyCodes);
+    }
 
+    /**
+     * Taps the given keys.
+     *
+     * <p>Presses all the keys in order, then releases
+     * them all in reverse order, then calls
+     * {@link FxThreadUtils#waitForFxEvents()}.
+     *
+     * @param keyCodes The key codes to press then release.
+     * @return This object, for easy chaining of methods.
+     */
+    public T tap(KeyCode... keyCodes);
+    
+    
     /**
      * Presses all the keys in the given order, then calls
      * {@link FxThreadUtils#waitForFxEvents()}.

@@ -94,7 +94,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface push(KeyCode... keyCodes)
+    public FxRobotInterface tap(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         FxThreadUtils.syncFx(() -> {
@@ -346,12 +346,6 @@ public class FxRobot implements FxRobotInterface
     public FxRobotInterface moveTo(String query, Motion motion)
     {
         return moveTo(point(query), motion);
-    }
-
-    @Override
-    public FxRobotInterface moveTo(Node node)
-    {
-        return moveTo(point(node));
     }
 
     @Override

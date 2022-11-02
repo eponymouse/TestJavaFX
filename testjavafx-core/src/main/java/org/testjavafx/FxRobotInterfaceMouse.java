@@ -142,11 +142,11 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     /**
      * Moves to the centre of the result of the query using the default
      * {@link Motion}.
-     * 
+     *
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after moving.
      *
-     * @param query The query to use, with retrying. 
+     * @param query The query to use, with retrying.
      * @return This object, for easy chaining.
      */
     public default T moveTo(String query)
@@ -155,24 +155,12 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
     }
 
     /**
-     * Moves to the centre of the node using the default
-     * {@link Motion}.
-     *
-     * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
-     * after moving.
-     *
-     * @param node The target node to move to the centre of, according to its bounds. 
-     * @return This object, for easy chaining.
-     */
-    public T moveTo(Node node);
-
-    /**
      * Moves to the given screen position using the default {@link Motion}.
      *
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after moving.
      *
-     * @param screenPosition The screen position to move to. 
+     * @param screenPosition The screen position to move to.
      * @return This object, for easy chaining.
      */
     public default T moveTo(Point2D screenPosition)
@@ -214,7 +202,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after moving.
      *
-     * @param query The query to use, with retrying. 
+     * @param query The query to use, with retrying.
      * @param motion The motion to use for the movement.
      * @return This object, for easy chaining.
      */
@@ -227,7 +215,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after moving.
      *
-     * @param screenPosition The screen position to move to. 
+     * @param screenPosition The screen position to move to.
      * @param motion The motion to use for the movement.
      * @return This object, for easy chaining.
      */
@@ -289,7 +277,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     /**
      * Scrolls by the given amount vertically.
-     * 
+     *
      * <p>Note that I believe the amount can be interpreted differently
      * on different platforms.  On macOS there is a setting to invert
      * the mouse wheel and I think that inverts what this parameter means.
@@ -370,7 +358,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     /**
      * Scrolls the given amount in the given horizontal direction.  This is
-     * done by holding shift while scrolling, so the shift key will be released 
+     * done by holding shift while scrolling, so the shift key will be released
      * after this method.
      *
      * <p>Note that I believe the amount can be interpreted differently
