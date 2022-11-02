@@ -36,11 +36,14 @@ public class ScrollTest extends ApplicationTest
         primaryStage.setScene(new Scene(scrollPane));
         primaryStage.show();
     }
-    
+
     @Test
     public void vertTest()
     {
-        moveTo(point(scrollPane));
+        if (Boolean.getBoolean("testjavafx.headless"))
+            return;
+        
+        clickOn(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
         scroll(SystemUtils.IS_OS_MAC_OSX ? -1 : 1);
@@ -54,7 +57,10 @@ public class ScrollTest extends ApplicationTest
     @Test
     public void horizTest()
     {
-        moveTo(point(scrollPane));
+        if (Boolean.getBoolean("testjavafx.headless"))
+            return;
+        
+        clickOn(point(scrollPane));
         MatcherAssert.assertThat(scrollPane.getHvalue(), Matchers.equalTo(0.0));
         MatcherAssert.assertThat(scrollPane.getVvalue(), Matchers.equalTo(0.0));
         scrollHorizontal(SystemUtils.IS_OS_MAC_OSX ? -1 : 1);

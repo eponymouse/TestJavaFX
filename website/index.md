@@ -54,5 +54,7 @@ differences between this library and TestFX are:
   clearer (queries are built then run in one go, not run piecemeal).
 * This library (inspired by <a href="https://www.cypress.io/">Cypress</a>) features support for waiting/retrying for prerequisite conditions,
   which helps tests to be less flaky.
+* This library has a simpler internal implementation; it only uses the JavaFX 11+ public Robot API
+  which removes the need for all the different robot interfaces.
 
 At the moment the TestJavaFX API is roughly a subset of TestFX.  Essentially, I implemented the parts I needed for my own projects, and TestFX feels like it has a large API with all possible variants -- in some places I've deliberately implemented a smaller subset to keep the number of methods down.  Feel free to file an issue or pull request if you require more methods from TestFX.
