@@ -13,6 +13,7 @@
  */
 package org.testjavafx;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -286,6 +287,8 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobotInterface moveTo(Point2D screenPosition, Motion motion)
     {
+        Preconditions.checkNotNull(screenPosition, "moveTo->screenPosition must not be null");
+        
         if (motion == Motion.HORIZONTAL_FIRST)
         {
             moveTo(new Point2D(screenPosition.getX(), FxThreadUtils.syncFx(actualRobot::getMouseY)), Motion.STRAIGHT_LINE);
