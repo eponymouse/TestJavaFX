@@ -1,3 +1,16 @@
+/*
+ * TestJavaFX: Testing for JavaFX applications
+ * Copyright (c) Neil Brown, 2022.
+ *
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the
+ * European Commission - subsequent versions of the EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ */
 package org.testjavafx;
 
 import javafx.application.Platform;
@@ -9,6 +22,13 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * Methods for querying the scene graph. 
+ *
+ * @param <T> The type of this object to be returned from all the methods.
+ *            This will be {@link FxRobotInterface} if you use these methods via
+ *            {@link FxRobotInterface} or {@link FxRobot}.
+ */
 public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
 {
     /**
@@ -99,11 +119,11 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
     }
 
     /**
-     * Version of {@link #isShowing(String)}  for use with {@link #waitUntil(BooleanSupplier)},
-     * for example:
+     * Version of {@link #isShowing(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
+     * For example:
      * 
      * <code>waitUntil(showing("Cancel"))</code>
-     * 
+     *
      * @param query The query to run via {@link #lookup(String)}
      * @return A BooleanSupplier that will return true if the query finds at least one node, false if no nodes are found.
      */
@@ -113,8 +133,8 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
     }
 
     /**
-     * Version of {@link #isFocused(String)}  for use with {@link #waitUntil(BooleanSupplier)},
-     * for example:
+     * Version of {@link #isFocused(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
+     * For example:
      *
      * <code>waitUntil(focused("Cancel"))</code>
      *
