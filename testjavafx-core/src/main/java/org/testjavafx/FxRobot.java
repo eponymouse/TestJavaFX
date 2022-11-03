@@ -45,6 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface tap(KeyCode... keyCodes)
+    public FxRobot tap(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         FxThreadUtils.syncFx(() -> {
@@ -116,7 +117,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface press(KeyCode... keyCodes)
+    public FxRobot press(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = ImmutableList.copyOf(keyCodes);
         FxThreadUtils.syncFx(() -> {
@@ -128,7 +129,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface release(KeyCode... keyCodes)
+    public FxRobot release(KeyCode... keyCodes)
     {
         ImmutableList<KeyCode> order = keyCodes.length == 0 ? FxThreadUtils.syncFx(() -> ImmutableList.copyOf(pressedKeys)) : ImmutableList.copyOf(keyCodes);
         FxThreadUtils.syncFx(() -> {
@@ -142,7 +143,7 @@ public class FxRobot implements FxRobotInterface
 
     // Taken from TestFX:
     @Override
-    public FxRobotInterface write(String text, int millisecondDelay)
+    public FxRobot write(String text, int millisecondDelay)
     {
         Window w = focusedWindow();
         Scene scene = w.getScene();
@@ -150,6 +151,7 @@ public class FxRobot implements FxRobotInterface
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, KeyCode.UNDEFINED, "")));
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, KeyCode.UNDEFINED, "")));
+            FxThreadUtils.waitForFxEvents();
             sleep(millisecondDelay);
         });
         FxThreadUtils.waitForFxEvents();
@@ -224,7 +226,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface press(MouseButton... buttons)
+    public FxRobot press(MouseButton... buttons)
     {
         MouseButton[] actualButtons = buttons.length == 0 ? new MouseButton[]{MouseButton.PRIMARY} : buttons;
         FxThreadUtils.syncFx(() -> {
@@ -236,7 +238,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface release(MouseButton... buttons)
+    public FxRobot release(MouseButton... buttons)
     {
         FxThreadUtils.syncFx(() -> {
             if (buttons.length == 0)
@@ -258,7 +260,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface clickOn(String query, MouseButton... mouseButtons)
+    public FxRobot clickOn(String query, MouseButton... mouseButtons)
     {
         Node node = lookup(query).queryWithRetry();
         if (node == null)
@@ -268,7 +270,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface clickOn(MouseButton... mouseButtons)
+    public FxRobot clickOn(MouseButton... mouseButtons)
     {
         MouseButton[] actualButtons = mouseButtons.length == 0 ? new MouseButton[] {MouseButton.PRIMARY} : mouseButtons;
         FxThreadUtils.syncFx(() -> {
@@ -285,7 +287,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface moveTo(Point2D screenPosition, Motion motion)
+    public FxRobot moveTo(Point2D screenPosition, Motion motion)
     {
         Preconditions.checkNotNull(screenPosition, "moveTo->screenPosition must not be null");
         
@@ -346,15 +348,15 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface moveTo(String query, Motion motion)
+    public FxRobot moveTo(String query, Motion motion)
     {
         return moveTo(point(query), motion);
     }
 
     @Override
-    public FxRobotInterface moveBy(double x, double y)
+    public FxRobot moveBy(double x, double y)
     {
-        return moveTo(FxThreadUtils.syncFx(actualRobot::getMousePosition).add(x, y));
+        return (FxRobot)moveTo(FxThreadUtils.syncFx(actualRobot::getMousePosition).add(x, y));
     }
 
     @Override
@@ -369,7 +371,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface scroll(int verticalAmount)
+    public FxRobot scroll(int verticalAmount)
     {
         FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(verticalAmount));
         FxThreadUtils.waitForFxEvents();
@@ -377,7 +379,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobotInterface scrollHorizontal(int horizontalAmount)
+    public FxRobot scrollHorizontal(int horizontalAmount)
     {
         press(KeyCode.SHIFT);
         FxThreadUtils.syncFx(() -> actualRobot.mouseWheel(horizontalAmount));
@@ -417,5 +419,32 @@ public class FxRobot implements FxRobotInterface
             // Give up:
             return null;
         });
+    }
+    
+    @Override
+    public FxRobot waitUntil(BooleanSupplier check)
+    {
+        if (!Platform.isFxApplicationThread())
+        {
+            for (int retries = 80; retries >= 0; retries--)
+            {
+                try
+                {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e)
+                {
+                    // Just cancel the sleep, we'll go round and retry anyway
+                }
+                if (FxThreadUtils.syncFx(check::getAsBoolean))
+                    return this;
+            }
+        }
+        else
+        {
+            if (check.getAsBoolean())
+                return this;
+        }
+        throw new RuntimeException("waitUntil() condition was not satisfied even after retries");
     }
 }

@@ -12,6 +12,7 @@ import org.testjavafx.FxRobot;
  */
 module org.testjavafx.core {
     exports org.testjavafx;
+    exports org.testjavafx.node;
  
     requires com.google.common;
     requires javafx.controls;
