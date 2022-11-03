@@ -42,10 +42,7 @@ public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
      * @param keyCodes The key codes to press then release.
      * @return This object, for easy chaining of methods.
      */
-    public default T push(KeyCode... keyCodes)
-    {
-        return tap(keyCodes);
-    }
+    public T push(KeyCode... keyCodes);
 
     /**
      * Taps the given keys.
@@ -90,10 +87,7 @@ public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
      * @param c The character to write.
      * @return This object, for easy chaining of methods.
      */
-    public default T write(char c)
-    {
-        return write(Character.toString(c));
-    }
+    public T write(char c);
 
     /**
      * Writes the given String, one character at a time,
@@ -103,10 +97,7 @@ public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
      * @param text The text to write.
      * @return This object, for easy chaining of methods.
      */
-    public default T write(String text)
-    {
-        return write(text, 0);
-    }
+    public T write(String text);
 
     /**
      * Writes the given String, one character at a time,

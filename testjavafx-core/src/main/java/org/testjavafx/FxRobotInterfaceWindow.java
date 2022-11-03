@@ -13,15 +13,9 @@
  */
 package org.testjavafx;
 
-import com.google.common.collect.ImmutableList;
-import javafx.stage.PopupWindow;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.testjavafx.node.NodeQuery;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -64,63 +58,7 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
      * @return A list of all available windows, sorted by the closeness to
      *         {@link #focusedWindow()} within the window hierarchy.
      */
-    public default List<Window> listTargetWindows()
-    {
-        return FxThreadUtils.syncFx(() -> fetchWindowsByProximityTo(focusedWindow()));
-    }
-
-    // Only call on FX thread
-    private List<Window> fetchWindowsByProximityTo(Window targetWindow)
-    {
-        return orderWindowsByProximityTo(targetWindow, listWindows());
-    }
-
-    // Only call on FX thread
-    private List<Window> orderWindowsByProximityTo(Window targetWindow, List<Window> windows)
-    {
-        List<Window> copy = new ArrayList<>(windows);
-        copy.sort(Comparator.comparingInt(w -> calculateWindowProximityTo(targetWindow, w)));
-        return Collections.unmodifiableList(copy);
-    }
-
-    // Only call on FX thread
-    private int calculateWindowProximityTo(Window targetWindow, Window window)
-    {
-        if (window == targetWindow)
-        {
-            return 0;
-        }
-        if (isOwnerOf(window, targetWindow))
-        {
-            return 1;
-        }
-        return 2;
-    }
-
-    // Only call on FX thread
-    private boolean isOwnerOf(Window window, Window targetWindow)
-    {
-        Window ownerWindow = retrieveOwnerOf(window);
-        if (ownerWindow == targetWindow)
-        {
-            return true;
-        }
-        return ownerWindow != null && isOwnerOf(ownerWindow, targetWindow);
-    }
-
-    // Only call on FX thread
-    private Window retrieveOwnerOf(Window window)
-    {
-        if (window instanceof Stage)
-        {
-            return ((Stage) window).getOwner();
-        }
-        if (window instanceof PopupWindow)
-        {
-            return ((PopupWindow) window).getOwnerWindow();
-        }
-        return null;
-    }
+    public List<Window> listTargetWindows();
 
     /**
      * Gets a list of all currently showing JavaFX windows.
@@ -135,10 +73,7 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
      * @return A list of all currently showing JavaFX windows
      *         within the current application.
      */
-    public default List<Window> listWindows()
-    {
-        return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
-    }
+    public List<Window> listWindows();
 
     /**
      * Get the currently focused window.

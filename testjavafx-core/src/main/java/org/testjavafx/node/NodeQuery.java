@@ -13,7 +13,6 @@
  */
 package org.testjavafx.node;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import org.testjavafx.FxRobot;
 
@@ -106,10 +105,7 @@ public interface NodeQuery
      * @param <T> The type to cast the result to (use Node if you don't want this cast)
      * @return The Optional-wrapped result of the query or empty if no result was found.
      */
-    public default <T extends Node> Optional<T> tryQuery()
-    {
-        return Optional.ofNullable(query());
-    }
+    public <T extends Node> Optional<T> tryQuery();
 
     /**
      * Like {@link #query()} but if no such node is found, it is retried every 100ms
@@ -126,26 +122,7 @@ public interface NodeQuery
      * @param <T> The desired/expected return type of the query.
      * @return The found node, cast unsafely to T, or null if nothing was found.
      */
-    public default <T extends Node> T queryWithRetry()
-    {
-        T t = query();
-        if (!Platform.isFxApplicationThread())
-        {
-            for (int retries = 50; t == null && retries >= 0; retries--)
-            {
-                try
-                {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                {
-                    // Just cancel the sleep, we'll go round and retry anyway
-                }
-                t = query();
-            }
-        }
-        return t;
-    }
+    public <T extends Node> T queryWithRetry();
 
     /**
      * Filters the current results (without searching any further for new results)
@@ -170,9 +147,5 @@ public interface NodeQuery
      *            Use Node if you do not want this cast.
      * @return The result of calling {@link #filter(Predicate)}
      */
-    @SuppressWarnings("unchecked")
-    public default <T extends Node> NodeQuery match(Predicate<T> nodePredicate)
-    {
-        return filter((Node n) -> nodePredicate.test((T)n));
-    }
+    public <T extends Node> NodeQuery match(Predicate<T> nodePredicate);
 }

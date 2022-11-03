@@ -13,7 +13,6 @@
  */
 package org.testjavafx;
 
-import javafx.geometry.Bounds;
 import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
 import javafx.geometry.VerticalDirection;
@@ -80,16 +79,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      *                     will be clicked.
      * @return This object, for easy chaining.
      */
-    public default T clickOn(Node node, MouseButton... mouseButtons)
-    {
-        if (node == null)
-            throw new NullPointerException("Cannot click on null node");
-        Point2D p = FxThreadUtils.syncFx(() -> {
-            Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
-            return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());
-        });
-        return clickOn(p, mouseButtons);
-    }
+    public T clickOn(Node node, MouseButton... mouseButtons);
 
     /**
      * Clicks on the centre of the result of the query, using the given mouse buttons.
@@ -120,11 +110,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      *                     will be clicked.
      * @return This object, for easy chaining.
      */
-    public default T clickOn(Point2D screenPosition, MouseButton... mouseButtons)
-    {
-        moveTo(screenPosition);
-        return clickOn(mouseButtons);
-    }
+    public T clickOn(Point2D screenPosition, MouseButton... mouseButtons);
 
     /**
      * Clicks the mouse at the current position, using the given mouse buttons.
@@ -149,10 +135,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param query The query to use, with retrying.
      * @return This object, for easy chaining.
      */
-    public default T moveTo(String query)
-    {
-        return moveTo(query, Motion.DEFAULT());
-    }
+    public T moveTo(String query);
 
     /**
      * Moves to the given screen position using the default {@link Motion}.
@@ -163,10 +146,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param screenPosition The screen position to move to.
      * @return This object, for easy chaining.
      */
-    public default T moveTo(Point2D screenPosition)
-    {
-        return moveTo(screenPosition, Motion.DEFAULT());
-    }
+    public T moveTo(Point2D screenPosition);
 
     /**
      * Moves to the given screen position using the default {@link Motion}.
@@ -178,10 +158,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param screenY The screen Y position to move to.
      * @return This object, for easy chaining.
      */
-    public default T moveTo(double screenX, double screenY)
-    {
-        return moveTo(new Point2D(screenX, screenY));
-    }
+    public T moveTo(double screenX, double screenY);
 
     /**
      * Moves by the given amount using the default {@link Motion}.
@@ -229,10 +206,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      *                     will be pressed.
      * @return This object, for easy chaining.
      */
-    public default T drag(MouseButton... mouseButtons)
-    {
-        return press(mouseButtons);
-    }
+    public T drag(MouseButton... mouseButtons);
 
     /**
      * Moves the mouse to the given position then starts a drag by pressing the
@@ -245,11 +219,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      *                     will be pressed.
      * @return This object, for easy chaining.
      */
-    public default T drag(Point2D from, MouseButton... mouseButtons)
-    {
-        moveTo(from);
-        return press(mouseButtons);
-    }
+    public T drag(Point2D from, MouseButton... mouseButtons);
 
     /**
      * Drops the item at the current mouse position.  This is a synonym for
@@ -257,10 +227,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      *
      * @return This object, for easy chaining.
      */
-    public default T drop()
-    {
-        return release(new MouseButton[0]);
-    }
+    public T drop();
 
     /**
      * Drops the item at the given mouse position.  This is equivalent to calling
@@ -269,11 +236,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param to The screen position to move to before releasing the buttons.
      * @return This object, for easy chaining.
      */
-    public default T dropTo(Point2D to)
-    {
-        moveTo(to, Motion.STRAIGHT_LINE);
-        return release(new MouseButton[0]);
-    }
+    public T dropTo(Point2D to);
 
     /**
      * Scrolls by the given amount vertically.
@@ -304,10 +267,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param verticalDirection The direction to scroll in.
      * @return This object, for easy chaining.
      */
-    public default T scroll(VerticalDirection verticalDirection)
-    {
-        return scroll(1, verticalDirection);
-    }
+    public T scroll(VerticalDirection verticalDirection);
 
     /**
      * Scrolls the given amount in the given vertical direction.
@@ -323,10 +283,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param verticalDirection The direction to scroll in.
      * @return This object, for easy chaining.
      */
-    public default T scroll(int amount, VerticalDirection verticalDirection)
-    {
-        return scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
-    }
+    public T scroll(int amount, VerticalDirection verticalDirection);
 
     /**
      * Scrolls by the given amount horizontally.  This is done by holding
@@ -361,10 +318,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param horizontalDirection The direction to scroll in.
      * @return This object, for easy chaining.
      */
-    public default T scroll(HorizontalDirection horizontalDirection)
-    {
-        return scroll(1, horizontalDirection);
-    }
+    public T scroll(HorizontalDirection horizontalDirection);
 
     /**
      * Scrolls the given amount in the given horizontal direction.  This is
@@ -382,8 +336,5 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
      * @param horizontalDirection The direction to scroll in.
      * @return This object, for easy chaining.
      */
-    public default T scroll(int amount, HorizontalDirection horizontalDirection)
-    {
-        return scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
-    }
+    public T scroll(int amount, HorizontalDirection horizontalDirection);
 }

@@ -15,6 +15,7 @@ package org.testjavafx;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
@@ -25,6 +26,7 @@ import org.testjavafx.node.NodeQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -114,5 +116,40 @@ class NodeQueryImpl implements NodeQuery
     public NodeQuery filter(Predicate<Node> nodePredicate)
     {
         return new NodeQueryImpl(() -> allRoots.get().stream().filter(nodePredicate).collect(ImmutableList.toImmutableList()));
+    }
+
+    @Override
+    public <T extends Node> Optional<T> tryQuery()
+    {
+        return Optional.ofNullable(query());
+    }
+
+    @Override
+    public <T extends Node> T queryWithRetry()
+    {
+        T t = query();
+        if (!Platform.isFxApplicationThread())
+        {
+            for (int retries = 50; t == null && retries >= 0; retries--)
+            {
+                try
+                {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e)
+                {
+                    // Just cancel the sleep, we'll go round and retry anyway
+                }
+                t = query();
+            }
+        }
+        return t;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Node> NodeQuery match(Predicate<T> nodePredicate)
+    {
+        return filter((Node n) -> nodePredicate.test((T)n));
     }
 }
