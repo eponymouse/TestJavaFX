@@ -54,6 +54,10 @@ public class FxThreadUtils
     /** A way to wait for the dummy app to have been started up fully. */
     private static final CompletableFuture<Boolean> dummyAppRunning = new CompletableFuture<>();
 
+    private FxThreadUtils()
+    {
+    }
+
     /**
      * Waits for the FX events thread to look idle.
      *

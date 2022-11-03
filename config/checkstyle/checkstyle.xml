@@ -28,6 +28,7 @@
             <property name="option" value="text"/>
         </module>
         <module name="EmptyCatchBlock"/>
+        <module name="HideUtilityClassConstructor"/>        
         <!-- We should activate this before upgrading to Java 17: -->
         <module name="IllegalIdentifierName">
             <!-- Remove case insensitivity.  Why is it a problem to have a name Record? -->
