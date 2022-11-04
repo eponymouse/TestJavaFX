@@ -465,7 +465,7 @@ public class FxRobot implements FxRobotInterface
     @Override
     public boolean isFocused(String query)
     {
-        return lookup(query).tryQuery().map(Node::isFocused).orElse(false);
+        return FxThreadUtils.syncFx(() -> lookup(query).queryAll().stream().anyMatch(Node::isFocused));
     }
 
     @Override

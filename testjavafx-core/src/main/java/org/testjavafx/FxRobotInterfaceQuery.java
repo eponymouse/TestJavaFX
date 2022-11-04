@@ -105,7 +105,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * until it can run on the FX thread.
      *
      * @param query The query to run via {@link #lookup(String)}
-     * @return True if the query finds a node and the first node is focused, false if no nodes are found or the first result is not focused.
+     * @return True if the query finds any nodes that are focused, false if no nodes are found or if none of the results are focused.
      */
     public boolean isFocused(String query);
 
@@ -127,7 +127,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * <code>waitUntil(focused("Cancel"))</code>
      *
      * @param query The query to run via {@link #lookup(String)}
-     * @return A BooleanSupplier that will return true if the query finds a node and the first node is focused, false if no nodes are found or the first result is not focused.
+     * @return A BooleanSupplier that will return true if the query finds any node that is focused, false if no nodes are found that are focused.
      */
     public BooleanSupplier focused(String query);
 
