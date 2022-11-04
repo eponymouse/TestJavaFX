@@ -27,4 +27,8 @@ Then you will need to add some extra Java properties to your test task.  I usual
 
 You can vary the geometry, which is the size of the headless screen.
 
+Running in parallel
+---
+
+Monocle runs one GUI per JVM, much like headed JavaFX.  If you want to run multiple Monocle tests in parallel you will need to run them in separate JVMs.  It may be worth exploring the Gradle option <a href="https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html#org.gradle.api.tasks.testing.Test:maxParallelForks">maxParallelForks</a> for doing this. 
 
