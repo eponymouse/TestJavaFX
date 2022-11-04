@@ -6,7 +6,7 @@ plugins {
 subprojects { subproject ->
     group 'com.eponymouse'
     version '0.1'
-    
+
     apply plugin: 'org.openjfx.javafxplugin'
 
     javafx {
@@ -20,14 +20,22 @@ subprojects { subproject ->
     checkstyle {
         toolVersion = "10.3.4"
     }
-    
+
     tasks.withType(Checkstyle) {
         exclude "**/module-info.java"
         exclude "**/*Test.java"
     }
-    
+
     repositories {
         mavenCentral()
+    }
+
+    tasks.withType(Javadoc) {
+        options.encoding = 'UTF-8'
+        options.addBooleanOption('Xdoclint:all', true)
+        options.addBooleanOption('html5', true)
+        options.addBooleanOption('linksource', true)
+        options.addStringOption('link', 'https://openjfx.io/javadoc/11/')
     }
 }
 
@@ -39,8 +47,3 @@ tasks.named("dependencyUpdates").configure {
     }
 }
 
-tasks.withType(Javadoc) {
-    options.encoding = 'UTF-8'
-    options.addBooleanOption('Xdoclint:all', true)
-    options.addBooleanOption('html5', true)
-}
