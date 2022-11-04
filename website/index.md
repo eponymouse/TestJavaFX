@@ -10,9 +10,9 @@ For example, imagine you want to test writing in a couple of text fields and cli
     tap(KeyCode.TAB);
     write("Summers");
     clickOn("Ok");
-    waitUntil(() -> notShowing("Ok"));
+    waitUntil(not(showing("Ok")));
 
-For more methods, see the core <a href="/latest-testjavafx-core/org.testjavafx.core/org/testjavafx/FxRobotInterface.html">FxRobotInterface</a> class.
+For more methods, see the core <a href="/latest-testjavafx-core/org.testjavafx.core/org/testjavafx/FxRobot.html">FxRobot</a> class.
 
 Add dependency
 ---
@@ -31,7 +31,7 @@ By default tests run in headed mode, meaning they run live on your screen and co
 There are several ways to run the tests headless, described on other pages:
 
  - <a href="{% link running-with-xvfb.md %}">Running headless on Linux (incl. Github Actions) using Xvfb (and recording a video of the test)</a>.
- - TODO instructions for running on Monocle
+ - <a href="{% link running-with-monocle.md %}">Running headless using the Monocle libraries</a>.
 
 I especially recommend the first option on Linux as the video is very useful for debugging test failures.
 

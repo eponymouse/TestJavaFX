@@ -13,14 +13,11 @@
  */
 package org.testjavafx;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import org.testjavafx.node.NodeQuery;
 
-import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Methods for querying the scene graph. 
@@ -99,10 +96,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @param query The query to run via {@link #lookup(String)}
      * @return True if the query finds at least one node, false if no nodes are found.
      */
-    public default boolean isShowing(String query)
-    {
-        return lookup(query).query() != null;
-    }
+    public boolean isShowing(String query);
 
     /**
      * An instant query (without retrying) for whether a node is focused.
@@ -111,12 +105,9 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * until it can run on the FX thread.
      *
      * @param query The query to run via {@link #lookup(String)}
-     * @return True if the query finds a node and the first node is focused, false if no nodes are found or the first result is not focused.
+     * @return True if the query finds any nodes that are focused, false if no nodes are found or if none of the results are focused.
      */
-    public default boolean isFocused(String query)
-    {
-        return lookup(query).tryQuery().map(Node::isFocused).orElse(false);
-    }
+    public boolean isFocused(String query);
 
     /**
      * Version of {@link #isShowing(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
@@ -127,10 +118,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @param query The query to run via {@link #lookup(String)}
      * @return A BooleanSupplier that will return true if the query finds at least one node, false if no nodes are found.
      */
-    public default BooleanSupplier showing(String query)
-    {
-        return () -> isShowing(query);
-    }
+    public BooleanSupplier showing(String query);
 
     /**
      * Version of {@link #isFocused(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
@@ -139,12 +127,9 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * <code>waitUntil(focused("Cancel"))</code>
      *
      * @param query The query to run via {@link #lookup(String)}
-     * @return A BooleanSupplier that will return true if the query finds a node and the first node is focused, false if no nodes are found or the first result is not focused.
+     * @return A BooleanSupplier that will return true if the query finds any node that is focused, false if no nodes are found that are focused.
      */
-    public default BooleanSupplier focused(String query)
-    {
-        return () -> isFocused(query);
-    }
+    public BooleanSupplier focused(String query);
 
     /**
      * Negate the boolean supplier.  Useful in combination with methods
@@ -155,10 +140,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @param booleanSupplier The supplier to negate
      * @return The negated version of the passed supplier.
      */
-    public default BooleanSupplier not(BooleanSupplier booleanSupplier)
-    {
-        return () -> !booleanSupplier.getAsBoolean();
-    }
+    public BooleanSupplier not(BooleanSupplier booleanSupplier);
 
     /**
      * Create a {@link BooleanSupplier} that is true only if all the
@@ -167,9 +149,5 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @param booleanSuppliers The list of suppliers to check
      * @return A new BooleanSupplier that checks that all the given suppliers return true.
      */
-    public default BooleanSupplier and(BooleanSupplier... booleanSuppliers)
-    {
-        return () -> Arrays.stream(booleanSuppliers).allMatch(BooleanSupplier::getAsBoolean);
-    }
-
+    public BooleanSupplier and(BooleanSupplier... booleanSuppliers);
 }

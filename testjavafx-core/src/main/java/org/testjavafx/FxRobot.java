@@ -22,13 +22,16 @@ import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
+import javafx.geometry.HorizontalDirection;
 import javafx.geometry.Point2D;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.robot.Robot;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -38,6 +41,8 @@ import org.testjavafx.node.NodeQuery;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +74,9 @@ import java.util.stream.Collectors;
  * <p>All of FxRobot's public methods are overrides of the FxRobotInterface interface
  * (and its superclasses).  The documentation of all the methods is automatically
  * inherited from those classes.
+ * 
+ * <p>Be careful if you override any of these methods
+ * yourself as some of them call each other and rely on the default behaviour.
  */
 public class FxRobot implements FxRobotInterface
 {
@@ -446,5 +454,242 @@ public class FxRobot implements FxRobotInterface
                 return this;
         }
         throw new RuntimeException("waitUntil() condition was not satisfied even after retries");
+    }
+
+    @Override
+    public boolean isShowing(String query)
+    {
+        return lookup(query).query() != null;
+    }
+
+    @Override
+    public boolean isFocused(String query)
+    {
+        return FxThreadUtils.syncFx(() -> lookup(query).queryAll().stream().anyMatch(Node::isFocused));
+    }
+
+    @Override
+    public BooleanSupplier showing(String query)
+    {
+        return () -> isShowing(query);
+    }
+
+    @Override
+    public BooleanSupplier focused(String query)
+    {
+        return () -> isFocused(query);
+    }
+
+    @Override
+    public BooleanSupplier not(BooleanSupplier booleanSupplier)
+    {
+        return () -> !booleanSupplier.getAsBoolean();
+    }
+
+    @Override
+    public BooleanSupplier and(BooleanSupplier... booleanSuppliers)
+    {
+        return () -> Arrays.stream(booleanSuppliers).allMatch(BooleanSupplier::getAsBoolean);
+    }
+
+    @Override
+    public List<Window> listTargetWindows()
+    {
+        return FxThreadUtils.syncFx(() -> fetchWindowsByProximityTo(focusedWindow()));
+    }
+
+    // Only call on FX thread
+    private List<Window> fetchWindowsByProximityTo(Window targetWindow)
+    {
+        return orderWindowsByProximityTo(targetWindow, listWindows());
+    }
+
+    // Only call on FX thread
+    private List<Window> orderWindowsByProximityTo(Window targetWindow, List<Window> windows)
+    {
+        List<Window> copy = new ArrayList<>(windows);
+        copy.sort(Comparator.comparingInt(w -> calculateWindowProximityTo(targetWindow, w)));
+        return Collections.unmodifiableList(copy);
+    }
+
+    // Only call on FX thread
+    private int calculateWindowProximityTo(Window targetWindow, Window window)
+    {
+        if (window == targetWindow)
+        {
+            return 0;
+        }
+        if (isOwnerOf(window, targetWindow))
+        {
+            return 1;
+        }
+        return 2;
+    }
+
+    // Only call on FX thread
+    private boolean isOwnerOf(Window window, Window targetWindow)
+    {
+        Window ownerWindow = retrieveOwnerOf(window);
+        if (ownerWindow == targetWindow)
+        {
+            return true;
+        }
+        return ownerWindow != null && isOwnerOf(ownerWindow, targetWindow);
+    }
+
+    // Only call on FX thread
+    private Window retrieveOwnerOf(Window window)
+    {
+        if (window instanceof Stage)
+        {
+            return ((Stage) window).getOwner();
+        }
+        if (window instanceof PopupWindow)
+        {
+            return ((PopupWindow) window).getOwnerWindow();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Window> listWindows()
+    {
+        return FxThreadUtils.syncFx(() -> ImmutableList.copyOf(Window.getWindows()));
+    }
+
+    @Override
+    public FxRobotInterface push(KeyCode... keyCodes)
+    {
+        return tap(keyCodes);
+    }
+
+    @Override
+    public FxRobotInterface write(char c)
+    {
+        return write(Character.toString(c));
+    }
+
+    @Override
+    public FxRobotInterface write(String text)
+    {
+        return write(text, 0);
+    }
+
+    @Override
+    public FxRobotInterface sleep(int milliseconds)
+    {
+        try
+        {
+            Thread.sleep(milliseconds);
+        }
+        catch (InterruptedException e)
+        {
+            // Just cancel the sleep, I guess
+        }
+        return this;
+    }
+
+    @Override
+    @Deprecated
+    public Window targetWindow()
+    {
+        return focusedWindow();
+    }
+
+    @Override
+    public Point2D point(String query)
+    {
+        Node node = lookup(query).queryWithRetry();
+        if (node == null)
+            return null;
+        else
+            return point(node);
+    }
+
+    @Override
+    public FxRobotInterface clickOn(Node node, MouseButton... mouseButtons)
+    {
+        if (node == null)
+            throw new NullPointerException("Cannot click on null node");
+        Point2D p = FxThreadUtils.syncFx(() -> {
+            Bounds screenBounds = node.localToScreen(node.getBoundsInLocal());
+            return new Point2D(screenBounds.getCenterX(), screenBounds.getCenterY());
+        });
+        return clickOn(p, mouseButtons);
+    }
+
+    @Override
+    public FxRobotInterface clickOn(Point2D screenPosition, MouseButton... mouseButtons)
+    {
+        moveTo(screenPosition);
+        return clickOn(mouseButtons);
+    }
+
+    @Override
+    public FxRobotInterface moveTo(String query)
+    {
+        return moveTo(query, Motion.DEFAULT());
+    }
+
+    @Override
+    public FxRobotInterface moveTo(Point2D screenPosition)
+    {
+        return moveTo(screenPosition, Motion.DEFAULT());
+    }
+
+    @Override
+    public FxRobotInterface moveTo(double screenX, double screenY)
+    {
+        return moveTo(new Point2D(screenX, screenY));
+    }
+
+    @Override
+    public FxRobotInterface drag(MouseButton... mouseButtons)
+    {
+        return press(mouseButtons);
+    }
+
+    @Override
+    public FxRobotInterface drag(Point2D from, MouseButton... mouseButtons)
+    {
+        moveTo(from);
+        return press(mouseButtons);
+    }
+
+    @Override
+    public FxRobotInterface drop()
+    {
+        return release(new MouseButton[0]);
+    }
+
+    @Override
+    public FxRobotInterface dropTo(Point2D to)
+    {
+        moveTo(to, Motion.STRAIGHT_LINE);
+        return release(new MouseButton[0]);
+    }
+
+    @Override
+    public FxRobotInterface scroll(VerticalDirection verticalDirection)
+    {
+        return scroll(1, verticalDirection);
+    }
+
+    @Override
+    public FxRobotInterface scroll(int amount, VerticalDirection verticalDirection)
+    {
+        return scroll(verticalDirection == VerticalDirection.DOWN ? amount : -amount);
+    }
+
+    @Override
+    public FxRobotInterface scroll(HorizontalDirection horizontalDirection)
+    {
+        return scroll(1, horizontalDirection);
+    }
+
+    @Override
+    public FxRobotInterface scroll(int amount, HorizontalDirection horizontalDirection)
+    {
+        return scroll(horizontalDirection == HorizontalDirection.RIGHT ? amount : -amount);
     }
 }

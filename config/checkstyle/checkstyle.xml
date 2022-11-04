@@ -67,6 +67,11 @@
         <module name="ModifierOrder"/>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="PackageName"/>
+        <module name="Regexp">
+            <!-- Default methods make Javadoc less clear because they are not shown in the subclasses: -->
+            <property name="format" value="public default"/>
+            <property name="illegalPattern" value="true"/>
+        </module>        
         <module name="RequireEmptyLineBeforeBlockTagGroup"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>

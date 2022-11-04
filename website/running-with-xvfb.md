@@ -1,3 +1,7 @@
+---
+title: "TestJavaFX"
+---
+
 Running with Xvfb
 ===
 
@@ -52,14 +56,15 @@ This stops all FFMPEG instances on the system.  The sleep gives FFMPEG time to f
 Running in parallel
 ---
 
-There is ultimately only one keyboard and mouse input system per X server-screen.  If you run tests in parallel, they will all fight over the mouse and keyboard.  For this reason it's impossible to run *headed* tests in parallel but it is possible to run tests in parallel with `Xvfb`.  To do this, you will either need to run multiple Xvfb or multiple screens on the Xvfb server.
+There is ultimately only one keyboard and mouse input system per X server-screen.  If you run tests in parallel, they will all fight over the mouse and keyboard.  For this reason it's impossible to run *headed* tests in parallel but it is possible to run tests in parallel with Monocle or `Xvfb`.  To do this with Xvfb, you will need to run multiple Xvfb instances.
 
 For example, to run multiple screens you can adjust the above to:
 
-        Xvfb :42 -screen 0 1920x1200x24 -screen 1 1920x1200x24 &
+        Xvfb :42 -screen 0 1920x1200x24 &
+        Xvfb :43 -screen 0 1920x1200x24 &
         sleep 5
         DISPLAY=:42.0 icewm &
-        DISPLAY=:42.1 icewm &
+        DISPLAY=:43.0 icewm &
 
 And so on.  In your build you can hardcode the display variable or dynamically work it out.  E.g. in Gradle you might run:
 
@@ -68,7 +73,7 @@ And so on.  In your build you can hardcode the display variable or dynamically w
          test {
              maxParallelForks = 1
              int index = allSubprojects.collect {p -> p.name}.sort().indexOf(subproject.name)
-             environment "DISPLAY", ":42." + index
+             environment "DISPLAY", ":" + (42 + index) + ".0"
          }
     }
 

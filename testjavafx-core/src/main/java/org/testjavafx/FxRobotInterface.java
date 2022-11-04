@@ -13,14 +13,9 @@
  */
 package org.testjavafx;
 
-import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Window;
-import org.testjavafx.node.NodeQuery;
-
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * The main interface with all the methods available to
@@ -33,14 +28,6 @@ import java.util.function.Supplier;
  *     <li>{@link FxRobotInterfaceWindow} for window queries</li>
  *     <li>{@link FxRobotInterfaceQuery} for querying nodes in the scene graph</li>
  * </ul>
- * 
- * <p>Some of the methods in these classes are default and some are
- * not.  In general this is just a matter of convenience of implementation
- * as to whether they are defined here (or in superclasses) as default,
- * or left to be defined in the child FxRobot concrete class.  You should
- * ultimately only call the methods via the FxRobot implementation so it
- * does not really matter.  Be careful if you override any of these methods
- * yourself as some of them call each other and rely on the default behaviour.
  *
  * <p>Any method (including it the superclasses) that returns
  * FxRobotInterface returns this object for easy chaining.
@@ -57,18 +44,7 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
      * @param milliseconds The number of milliseconds to sleep for.
      * @return This object for easy chaining.
      */
-    public default FxRobotInterface sleep(int milliseconds)
-    {
-        try
-        {
-            Thread.sleep(milliseconds);
-        }
-        catch (InterruptedException e)
-        {
-            // Just cancel the sleep, I guess
-        }
-        return this;
-    }
+    public FxRobotInterface sleep(int milliseconds);
 
     /**
      * This is a convenience method to aid migration from TestFX.  Note
@@ -79,12 +55,9 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
      * @return The return value of calling {@link #focusedWindow()}
      */
     @Deprecated
-    public default Window targetWindow()
-    {
-        return focusedWindow();
-    }
+    public Window targetWindow();
 
-    
+
     /**
      * Gets the centre of the given Node's bounds as
      * a coordinate on the screen.
@@ -113,13 +86,6 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
      * @return The centre (screen position) of the first found node's bounds, or null
      *         if no such node is found.
      */
-    public default Point2D point(String query)
-    {
-        Node node = lookup(query).queryWithRetry();
-        if (node == null)
-            return null;
-        else
-            return point(node);
-    }
+    public Point2D point(String query);
 
 }
