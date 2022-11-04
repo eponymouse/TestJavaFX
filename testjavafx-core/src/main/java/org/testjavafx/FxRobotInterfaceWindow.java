@@ -28,7 +28,7 @@ import java.util.List;
  * TestFX.  TestFX allows explicit setting and querying of the target window,
  * which can be confusing because it conflates the idea of the focused window
  * with the idea of setting a specific target window.
- * In TestJavaFX if you want the focused window, use {@link #focusedWindow()}
+ * In TestJavaFX if you want the focused windows, use {@link #focusedWindows()}
  * instead of the targetWindow() call to get the currently focused window.
  * If you want to target a specific window, use the {@link #from(Window)} call
  * to begin the query.
@@ -56,7 +56,7 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
      * it will block until it can perform the query on the FX thread.
      *
      * @return A list of all available windows, sorted by the closeness to
-     *         {@link #focusedWindow()} within the window hierarchy.
+     *         {@link #focusedWindows()} within the window hierarchy.
      */
     public List<Window> listTargetWindows();
 
