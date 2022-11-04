@@ -1,3 +1,7 @@
+---
+title: "TestJavaFX"
+---
+
 Running with Xvfb
 ===
 
