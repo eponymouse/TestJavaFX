@@ -76,23 +76,26 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
     public List<Window> listWindows();
 
     /**
-     * Get the currently focused window.
+     * Get the currently focused windows.  The reason for the plural is that
+     * if you show a popup window, JavaFX labels the parent window as focused
+     * and all the popup windows as focused.  So the answer to which window
+     * has focus can be none (e.g. if some other application has focus), one
+     * (the most common case) or multiple (which should be related through
+     * window ownership).
+     * 
+     * <p>There is an extra tweak for convenience.  Sometimes no window is focused, 
+     * but in this case we generally want to access the most recent return of focusedWindows(),
+     * so we return the values from the previous focusedWindows() call that
+     * are still showing.  If none of this applies and there is only one window available
+     * from {@link #listWindows()} we just return that as our best guess (but do not
+     * remember it for the previous-call mechanism just mentioned).  If all else fails
+     * we return the empty list.
      *
      * <p>This method is safe to call on the FX thread.  If called on another
      * thread it will block until it can its calculation on the FX thread.
      *
-     * <p>This has a few extra complications.  I have seen cases on Monocle
-     * where two windows (a parent and child) both claim to be focused, so in that
-     * case we prefer the child.  Sometimes no window can be focused, but in this
-     * case we generally want to access the most recent return of focusedWindow(),
-     * so we return the value from the previous focusedWindow() call provided it is
-     * still showing.  If none of this applies and there is only one window available
-     * from {@link #listWindows()} we just return that as our best guess (but do not
-     * remember it for the previous-call mechanism just mentioned).  If all else fails
-     * we return null.
-     *
-     * @return Our best guess at the current/recently-focused window (see above) or
-     *         null if no such window is available.
+     * @return Our best guess at the current/recently-focused windows (see above) or
+     *         empty if no such windows are available.  The return list is unmodifiable.
      */
-    public Window focusedWindow();
+    public List<Window> focusedWindows();
 }
