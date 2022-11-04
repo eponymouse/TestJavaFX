@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -88,7 +89,7 @@ public class FxRobot implements FxRobotInterface
     private final Set<MouseButton> pressedButtons = EnumSet.noneOf(MouseButton.class);
 
     /** The last window that was focused.  Only read/modified on FX thread. */
-    private WeakReference<Window> lastFocusedWindow = null;
+    private WeakReference<ImmutableList<Window>> lastFocusedWindows = null;
 
     /**
      * Construct a new instance.  This can either be called on the FX thread
@@ -153,8 +154,32 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobot write(String text, int millisecondDelay)
     {
-        Window w = focusedWindow();
-        Scene scene = w.getScene();
+        List<Window> focusedWindows = focusedWindows();
+        // We could just return but if the user meant to write, they meant to write:
+        if (focusedWindows.isEmpty())
+            throw new IllegalStateException("Cannot write as no focused window found.  Candidates: " +
+                FxThreadUtils.syncFx(() -> Window.getWindows().stream().map(w2 -> {
+                    Scene scene = w2.getScene();
+                    return w2 + "-focused=" + w2.isFocused()
+                            + "-owner=" + retrieveOwnerOf(w2)        
+                            + "-sceneFocusOwner=" + (scene == null ? "none" : scene.getFocusOwner())
+                            + "-focusOwnerFocused=" + (scene != null && scene.getFocusOwner() != null ? scene.getFocusOwner().isFocused() : "NA");
+                }).collect(Collectors.joining(", ")))
+            );
+        if (focusedWindows.size() > 1)
+        {
+            // Hmm, we can't type in all the windows.  Need to work out which one has a focused node:
+            List<Window> windowsWithAFocusOwner = focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList());
+            if (windowsWithAFocusOwner.size() == 1)
+                focusedWindows = windowsWithAFocusOwner;
+            else if (windowsWithAFocusOwner.isEmpty())
+                throw new IllegalStateException("Multiple focused windows found but none with a node with focus; unclear which one to type into: " + focusedWindows.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
+            else
+                throw new IllegalStateException("Multiple focused windows found and multiple with a node with focus; unclear which one to type into: " + windowsWithAFocusOwner.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
+        }
+        Scene scene = focusedWindows.get(0).getScene();
+        if (scene == null)
+            throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
         text.chars().forEach(c -> {
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, KeyCode.UNDEFINED, "")));
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
@@ -397,38 +422,35 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public Window focusedWindow()
+    public List<Window> focusedWindows()
     {
-        return FxThreadUtils.<Window>syncFx(() -> {
+        return FxThreadUtils.<ImmutableList<Window>>syncFx(() -> {
             List<Window> windows = Window.getWindows();
-            List<Window> focused = new ArrayList<>(windows.stream().filter(Window::isFocused).collect(Collectors.toList()));
-            // It seems that (only in Monocle?) multiple windows can claim to
-            // have focus when a main window shows sub-dialogs, so we have to manually
-            // try to work out the real focused window:
-            if (focused.size() > 1)
-            {
-                // Remove any windows claiming to be focused which have a child
-                // window that is focused:
-                focused.removeIf(w -> focused.stream().anyMatch(parent -> parent instanceof Stage && ((Stage) parent).getOwner() == w));
-            }
-            if (focused.size() == 1)
+            ImmutableList<Window> focused = windows.stream().filter(Window::isFocused).collect(ImmutableList.toImmutableList());
+            
+            if (!focused.isEmpty())
             {
                 // Remember this:
-                this.lastFocusedWindow = new WeakReference<>(focused.get(0));
-                return focused.get(0);
+                this.lastFocusedWindows = new WeakReference<>(focused);
+                return focused;
             }
             // No focused window; is the most recent one around?
-            Window lastFocused = this.lastFocusedWindow == null ? null : this.lastFocusedWindow.get();
+            ImmutableList<Window> lastFocused = this.lastFocusedWindows == null ? null : this.lastFocusedWindows.get();
             if (lastFocused != null)
-                return lastFocused;
+            {
+                // Only count windows that are still showing:
+                lastFocused = lastFocused.stream().filter(Window::isShowing).collect(ImmutableList.toImmutableList());
+                if (!lastFocused.isEmpty())
+                    return lastFocused;
+            }
             // Is there only one window?
             if (windows.size() == 1)
-                return windows.get(0); // Note we don't remember this, as it's only a default guess
+                return ImmutableList.copyOf(windows); // Note we don't remember this, as it's only a default guess
             // Give up:
-            return null;
+            return ImmutableList.of();
         });
     }
-    
+
     @Override
     public FxRobot waitUntil(BooleanSupplier check)
     {
@@ -495,20 +517,20 @@ public class FxRobot implements FxRobotInterface
     @Override
     public List<Window> listTargetWindows()
     {
-        return FxThreadUtils.syncFx(() -> fetchWindowsByProximityTo(focusedWindow()));
+        return FxThreadUtils.syncFx(() -> fetchWindowsByProximityTo(focusedWindows()));
     }
 
     // Only call on FX thread
-    private List<Window> fetchWindowsByProximityTo(Window targetWindow)
+    private List<Window> fetchWindowsByProximityTo(List<Window> targetWindows)
     {
-        return orderWindowsByProximityTo(targetWindow, listWindows());
+        return orderWindowsByProximityTo(targetWindows, listWindows());
     }
 
     // Only call on FX thread
-    private List<Window> orderWindowsByProximityTo(Window targetWindow, List<Window> windows)
+    private List<Window> orderWindowsByProximityTo(List<Window> targetWindows, List<Window> windows)
     {
         List<Window> copy = new ArrayList<>(windows);
-        copy.sort(Comparator.comparingInt(w -> calculateWindowProximityTo(targetWindow, w)));
+        copy.sort(Comparator.comparingInt(w -> targetWindows.stream().mapToInt(tw -> calculateWindowProximityTo(tw, w)).min().orElse(2)));
         return Collections.unmodifiableList(copy);
     }
 
@@ -593,7 +615,13 @@ public class FxRobot implements FxRobotInterface
     @Deprecated
     public Window targetWindow()
     {
-        return focusedWindow();
+        List<Window> windows = focusedWindows();
+        switch (windows.size())
+        {
+            case 0: return null;
+            case 1: return windows.get(0);
+            default: throw new IllegalStateException("Multiple windows currently have focus; use focusedWindows() to find them all and pick one.");
+        }
     }
 
     @Override

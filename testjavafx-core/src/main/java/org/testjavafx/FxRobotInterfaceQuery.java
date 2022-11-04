@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
 {
     /**
-     * Start a node query using the given query.  See {@link NodeQuery} for
-     * more information on node queries.
+     * Start a node query using the given query in all nodes in all showing windows.
+     * See {@link NodeQuery} for more information on node queries.
      *
      * <p>This method can be called from any thread.
      *
