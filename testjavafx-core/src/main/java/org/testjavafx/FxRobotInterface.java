@@ -49,13 +49,20 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
     /**
      * This is a convenience method to aid migration from TestFX.  Note
      * that its behaviour is different to TestFX.  This method calls
-     * {@link #focusedWindow()} -- see the documentation for that method
-     * to understand the difference.
+     * {@link #focusedWindows()} -- see the documentation for that method
+     * to understand the difference.  If there are no focused windows,
+     * this method returns null.  If there is one focused window,
+     * that window is returned.  If there are multiple focused windows,
+     * an exception is thrown.
+     * 
+     * <p>It is recommended you switch to calling {@link #focusedWindows()} yourself
+     * to resolve the case where there are multiple focused windows.
      *
-     * @return The return value of calling {@link #focusedWindow()}
+     * @return Null if no windows are focused, otherwise the single currently focused window.
+     * @throws RuntimeException If there are multiple focused windows.
      */
     @Deprecated
-    public Window targetWindow();
+    public Window targetWindow() throws RuntimeException;
 
 
     /**
