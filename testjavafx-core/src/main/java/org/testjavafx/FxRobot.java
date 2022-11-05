@@ -181,9 +181,16 @@ public class FxRobot implements FxRobotInterface
         if (scene == null)
             throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
         text.chars().forEach(c -> {
-            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, KeyCode.UNDEFINED, "")));
+            final KeyCode keyCode;
+            switch (c)
+            {
+                case '\n': keyCode = KeyCode.ENTER; break;
+                case '\t': keyCode = KeyCode.TAB; break;
+                default: keyCode = KeyCode.UNDEFINED; break;
+            }
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, keyCode, "")));
             FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
-            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, KeyCode.UNDEFINED, "")));
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, keyCode, "")));
             FxThreadUtils.waitForFxEvents();
             sleep(millisecondDelay);
         });
