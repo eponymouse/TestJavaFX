@@ -154,33 +154,8 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobot write(String text, int millisecondDelay)
     {
-        List<Window> focusedWindows = focusedWindows();
-        // We could just return but if the user meant to write, they meant to write:
-        if (focusedWindows.isEmpty())
-            throw new IllegalStateException("Cannot write as no focused window found.  Candidates: " +
-                FxThreadUtils.syncFx(() -> Window.getWindows().stream().map(w2 -> {
-                    Scene scene = w2.getScene();
-                    return w2 + "-focused=" + w2.isFocused()
-                            + "-owner=" + retrieveOwnerOf(w2)        
-                            + "-sceneFocusOwner=" + (scene == null ? "none" : scene.getFocusOwner())
-                            + "-focusOwnerFocused=" + (scene != null && scene.getFocusOwner() != null ? scene.getFocusOwner().isFocused() : "NA");
-                }).collect(Collectors.joining(", ")))
-            );
-        if (focusedWindows.size() > 1)
-        {
-            // Hmm, we can't type in all the windows.  Need to work out which one has a focused node:
-            List<Window> windowsWithAFocusOwner = focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList());
-            if (windowsWithAFocusOwner.size() == 1)
-                focusedWindows = windowsWithAFocusOwner;
-            else if (windowsWithAFocusOwner.isEmpty())
-                throw new IllegalStateException("Multiple focused windows found but none with a node with focus; unclear which one to type into: " + focusedWindows.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
-            else
-                throw new IllegalStateException("Multiple focused windows found and multiple with a node with focus; unclear which one to type into: " + windowsWithAFocusOwner.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
-        }
-        Scene scene = focusedWindows.get(0).getScene();
-        if (scene == null)
-            throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
         text.chars().forEach(c -> {
+            Scene scene = getFocusedSceneForWriting();
             final KeyCode keyCode;
             switch (c)
             {
@@ -196,6 +171,38 @@ public class FxRobot implements FxRobotInterface
         });
         FxThreadUtils.waitForFxEvents();
         return this;
+    }
+
+    private Scene getFocusedSceneForWriting()
+    {
+        List<Window> focusedWindows = focusedWindows();
+        // We could just return but if the user meant to write, they meant to write:
+        if (focusedWindows.isEmpty())
+            throw new IllegalStateException("Cannot write as no focused window found.  Candidates: " +
+                FxThreadUtils.syncFx(() -> Window.getWindows().stream().map(w2 -> {
+                    Scene scene = w2.getScene();
+                    return w2 + "-focused=" + w2.isFocused()
+                            + "-owner=" + retrieveOwnerOf(w2)        
+                            + "-sceneFocusOwner=" + (scene == null ? "none" : scene.getFocusOwner())
+                            + "-focusOwnerFocused=" + (scene != null && scene.getFocusOwner() != null ? scene.getFocusOwner().isFocused() : "NA");
+                }).collect(Collectors.joining(", ")))
+            );
+        if (focusedWindows.size() > 1)
+        {
+            // Hmm, we can't type in all the windows.  Need to work out which one has a focused node:
+            List<Window> windowsWithAFocusOwner = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
+            windowsWithAFocusOwner.removeIf(parent -> windowsWithAFocusOwner.stream().anyMatch(child -> isOwnerOf(child, parent)));
+            if (windowsWithAFocusOwner.size() == 1)
+                focusedWindows = windowsWithAFocusOwner;
+            else if (windowsWithAFocusOwner.isEmpty())
+                throw new IllegalStateException("Multiple focused windows found but none with a node with focus; unclear which one to type into: " + focusedWindows.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
+            else
+                throw new IllegalStateException("Multiple focused windows found and multiple with a node with focus; unclear which one to type into: " + windowsWithAFocusOwner.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
+        }
+        Scene scene = focusedWindows.get(0).getScene();
+        if (scene == null)
+            throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
+        return scene;
     }
 
     // Taken from TestFX:
@@ -556,14 +563,14 @@ public class FxRobot implements FxRobotInterface
     }
 
     // Only call on FX thread
-    private boolean isOwnerOf(Window window, Window targetWindow)
+    private boolean isOwnerOf(Window descendant, Window ancestor)
     {
-        Window ownerWindow = retrieveOwnerOf(window);
-        if (ownerWindow == targetWindow)
+        Window ownerWindow = retrieveOwnerOf(descendant);
+        if (ownerWindow == ancestor)
         {
             return true;
         }
-        return ownerWindow != null && isOwnerOf(ownerWindow, targetWindow);
+        return ownerWindow != null && isOwnerOf(ownerWindow, ancestor);
     }
 
     // Only call on FX thread
