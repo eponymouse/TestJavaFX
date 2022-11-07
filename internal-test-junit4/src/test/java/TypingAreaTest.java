@@ -14,8 +14,6 @@
 
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -23,7 +21,7 @@ import org.junit.Test;
 import org.testjavafx.FxThreadUtils;
 import org.testjavafx.junit4.ApplicationTest;
 
-public class TypingTestArea extends ApplicationTest
+public class TypingAreaTest extends ApplicationTest
 {
     private TextArea field;
 
