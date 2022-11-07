@@ -5,7 +5,9 @@ plugins {
 }
 
 javafx {
-    version = '11'
+    // Testing with JavaFX before 13 encounters this crash on Windows with Monocle:
+    // https://github.com/javafxports/openjdk-jfx/issues/66
+    version = '17'
     modules = [ 'javafx.base', 'javafx.controls', 'javafx.graphics' ]
     configuration = 'testImplementation'
 }
