@@ -11,13 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -41,6 +44,8 @@ public class DialogTest extends ApplicationTest
         parent = primaryStage;
         childField = new TextField();
         parentField = new TextField();
+        showPopupOnFocus(parentField);
+        showPopupOnFocus(childField);
         parent.setScene(new Scene(new Group(parentField)));
         parent.setOnShown(e -> parentField.requestFocus());
         parentField.textProperty().addListener(new ChangeListener<String>()
@@ -58,6 +63,21 @@ public class DialogTest extends ApplicationTest
             }
         });
         parent.show();
+    }
+
+    private void showPopupOnFocus(TextField f)
+    {
+        Popup p = new Popup();
+        p.getContent().add(new Label("Popup"));
+        f.focusedProperty().addListener(new ChangeListener<Boolean>()
+            {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+                {
+                    p.show(f.getScene().getWindow());
+                }
+            }
+        );
     }
 
     @Test
