@@ -190,7 +190,8 @@ public class FxRobot implements FxRobotInterface
         if (focusedWindows.size() > 1)
         {
             // Hmm, we can't type in all the windows.  Need to work out which one has a focused node:
-            List<Window> windowsWithAFocusOwner = focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList());
+            List<Window> windowsWithAFocusOwner = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
+            windowsWithAFocusOwner.removeIf(parent -> windowsWithAFocusOwner.stream().anyMatch(child -> isOwnerOf(child, parent)));
             if (windowsWithAFocusOwner.size() == 1)
                 focusedWindows = windowsWithAFocusOwner;
             else if (windowsWithAFocusOwner.isEmpty())
@@ -562,14 +563,14 @@ public class FxRobot implements FxRobotInterface
     }
 
     // Only call on FX thread
-    private boolean isOwnerOf(Window window, Window targetWindow)
+    private boolean isOwnerOf(Window descendant, Window ancestor)
     {
-        Window ownerWindow = retrieveOwnerOf(window);
-        if (ownerWindow == targetWindow)
+        Window ownerWindow = retrieveOwnerOf(descendant);
+        if (ownerWindow == ancestor)
         {
             return true;
         }
-        return ownerWindow != null && isOwnerOf(ownerWindow, targetWindow);
+        return ownerWindow != null && isOwnerOf(ownerWindow, ancestor);
     }
 
     // Only call on FX thread
