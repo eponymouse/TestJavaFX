@@ -154,6 +154,27 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobot write(String text, int millisecondDelay)
     {
+        text.chars().forEach(c -> {
+            Scene scene = getFocusedSceneForWriting();
+            final KeyCode keyCode;
+            switch (c)
+            {
+                case '\n': keyCode = KeyCode.ENTER; break;
+                case '\t': keyCode = KeyCode.TAB; break;
+                default: keyCode = KeyCode.UNDEFINED; break;
+            }
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, keyCode, "")));
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
+            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, keyCode, "")));
+            FxThreadUtils.waitForFxEvents();
+            sleep(millisecondDelay);
+        });
+        FxThreadUtils.waitForFxEvents();
+        return this;
+    }
+
+    private Scene getFocusedSceneForWriting()
+    {
         List<Window> focusedWindows = focusedWindows();
         // We could just return but if the user meant to write, they meant to write:
         if (focusedWindows.isEmpty())
@@ -180,22 +201,7 @@ public class FxRobot implements FxRobotInterface
         Scene scene = focusedWindows.get(0).getScene();
         if (scene == null)
             throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
-        text.chars().forEach(c -> {
-            final KeyCode keyCode;
-            switch (c)
-            {
-                case '\n': keyCode = KeyCode.ENTER; break;
-                case '\t': keyCode = KeyCode.TAB; break;
-                default: keyCode = KeyCode.UNDEFINED; break;
-            }
-            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_PRESSED, keyCode, "")));
-            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_TYPED, KeyCode.UNDEFINED, Character.toString(c))));
-            FxThreadUtils.asyncFx(() -> Event.fireEvent(getEventTarget(scene), createKeyEvent(KeyEvent.KEY_RELEASED, keyCode, "")));
-            FxThreadUtils.waitForFxEvents();
-            sleep(millisecondDelay);
-        });
-        FxThreadUtils.waitForFxEvents();
-        return this;
+        return scene;
     }
 
     // Taken from TestFX:
