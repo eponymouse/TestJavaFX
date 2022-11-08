@@ -22,8 +22,8 @@ publishing {
             def snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             url = isReleaseVersion ? releaseRepo : snapshotRepo
             credentials {
-                username = project.hasProperty('ossrhUsername') ? "$System.env.SONATYPE_USERNAME".trim() : "Unknown user"
-                password = project.hasProperty('ossrhPassword') ? "$System.env.SONATYPE_PASSWORD".trim() : "Unknown password"
+                username = "$System.env.SONATYPE_USERNAME".trim()
+                password = "$System.env.SONATYPE_PASSWORD".trim()
             }
         }
     }
