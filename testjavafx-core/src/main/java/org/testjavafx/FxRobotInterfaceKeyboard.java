@@ -106,6 +106,13 @@ public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
      * It sleeps for the given number of milliseconds
      * between each character.
      *
+     * <p>Note that there is already an inherent implementation
+     * delay between each character as this method calls {@link FxThreadUtils#waitForFxEvents()}
+     * between each character.  (Without this, all the character events
+     * pile up and are not necessarily processed on return from this
+     * method.)  So there's around 50-100ms between each character already,
+     * even if you pass a low value like 1 or 5 as millisecondDelay.
+     *
      * @param text The text to write.
      * @param millisecondDelay The number of milliseconds to wait between each character.
      * @return This object, for easy chaining of methods.
