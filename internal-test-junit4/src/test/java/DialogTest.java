@@ -83,38 +83,46 @@ public class DialogTest extends ApplicationTest
     @Test
     public void test1()
     {
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> parentField.getScene().getWindow())));
         write("A");
         write("B");
         write("C");
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)parentField::getText), Matchers.equalTo("A"));
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)childField::getText), Matchers.equalTo("BC"));
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> childField.getScene().getWindow())));
     }
     
     @Test
     public void test2()
     {
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> parentField.getScene().getWindow())));
         write("ABC");
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)parentField::getText), Matchers.equalTo("A"));
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)childField::getText), Matchers.equalTo("BC"));
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> childField.getScene().getWindow())));
     }
 
     @Test
     public void test1b()
     {
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> parentField.getScene().getWindow())));
         modality = Modality.WINDOW_MODAL;
         write("A");
         write("B");
         write("C");
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)parentField::getText), Matchers.equalTo("A"));
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)childField::getText), Matchers.equalTo("BC"));
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> childField.getScene().getWindow())));
     }
 
     @Test
     public void test2b()
     {
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> parentField.getScene().getWindow())));
         modality = Modality.WINDOW_MODAL;
         write("ABC");
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)parentField::getText), Matchers.equalTo("A"));
         MatcherAssert.assertThat(FxThreadUtils.syncFx((Callable<String>)childField::getText), Matchers.equalTo("BC"));
+        MatcherAssert.assertThat(targetWindow(), Matchers.equalTo(FxThreadUtils.syncFx(() -> childField.getScene().getWindow())));
     }
 }
