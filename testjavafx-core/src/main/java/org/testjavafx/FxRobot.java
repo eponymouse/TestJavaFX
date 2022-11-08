@@ -175,6 +175,40 @@ public class FxRobot implements FxRobotInterface
 
     private Scene getFocusedSceneForWriting()
     {
+        Window targetWindow = targetWindow();
+        Scene scene = targetWindow.getScene();
+        if (scene == null)
+            throw new IllegalStateException("Focused window " + targetWindow + " has a null Scene");
+        return scene;
+    }
+
+    @Override
+    public Window targetWindow()
+    {
+        List<Window> focusedWindows = focusedWindows();
+        // We could just return but if the user meant to write, they meant to write:
+        if (focusedWindows.isEmpty())
+            return null;
+        
+        if (focusedWindows.size() > 1)
+        {
+            // Hmm, we have multiple focused windows.  Need to work out which one has a focused node:
+            List<Window> windowsWithAFocusOwner = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
+            windowsWithAFocusOwner.removeIf(parent -> windowsWithAFocusOwner.stream().anyMatch(child -> isOwnerOf(child, parent)));
+            if (windowsWithAFocusOwner.size() == 1)
+                focusedWindows = windowsWithAFocusOwner;
+            else if (windowsWithAFocusOwner.isEmpty())
+                return null;
+            else // Just let it pick the first:
+                focusedWindows = windowsWithAFocusOwner;
+        }
+        // Guaranteed to be at least a size 1 list at this point:
+        return focusedWindows.get(0);
+    }
+
+    @Override
+    public Window targetWindowOrThrow() throws RuntimeException
+    {
         List<Window> focusedWindows = focusedWindows();
         // We could just return but if the user meant to write, they meant to write:
         if (focusedWindows.isEmpty())
@@ -189,7 +223,7 @@ public class FxRobot implements FxRobotInterface
             );
         if (focusedWindows.size() > 1)
         {
-            // Hmm, we can't type in all the windows.  Need to work out which one has a focused node:
+            // Hmm, we have multiple focused windows.  Need to work out which one has a focused node:
             List<Window> windowsWithAFocusOwner = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
             windowsWithAFocusOwner.removeIf(parent -> windowsWithAFocusOwner.stream().anyMatch(child -> isOwnerOf(child, parent)));
             if (windowsWithAFocusOwner.size() == 1)
@@ -199,10 +233,8 @@ public class FxRobot implements FxRobotInterface
             else
                 throw new IllegalStateException("Multiple focused windows found and multiple with a node with focus; unclear which one to type into: " + windowsWithAFocusOwner.stream().map(Objects::toString).collect(Collectors.joining(" or ")));
         }
-        Scene scene = focusedWindows.get(0).getScene();
-        if (scene == null)
-            throw new IllegalStateException("Focused window " + focusedWindows.get(0) + " has a null Scene");
-        return scene;
+        // Guaranteed to be a size 1 list at this point:
+        return focusedWindows.get(0);
     }
 
     // Taken from TestFX:
@@ -623,19 +655,6 @@ public class FxRobot implements FxRobotInterface
             // Just cancel the sleep, I guess
         }
         return this;
-    }
-
-    @Override
-    @Deprecated
-    public Window targetWindow()
-    {
-        List<Window> windows = focusedWindows();
-        switch (windows.size())
-        {
-            case 0: return null;
-            case 1: return windows.get(0);
-            default: throw new IllegalStateException("Multiple windows currently have focus; use focusedWindows() to find them all and pick one.");
-        }
     }
 
     @Override
