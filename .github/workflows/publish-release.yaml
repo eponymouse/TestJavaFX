@@ -21,4 +21,4 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291
         with:
-          arguments: :testjavafx-core:publishMavenJavaPublicationToMavenRepository --info --stacktrace --no-daemon --scan
+          arguments: :testjavafx-core:publishMavenJavaPublicationToMavenRepository --info --stacktrace --no-daemon
