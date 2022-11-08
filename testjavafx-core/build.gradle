@@ -1,7 +1,63 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+publishing {
+    repositories {
+        maven {
+            def releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotRepo = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = isReleaseVersion ? releaseRepo : snapshotRepo
+            credentials {
+                username = project.hasProperty('ossrhUsername') ? "$System.env.SONATYPE_USERNAME".trim() : "Unknown user"
+                password = project.hasProperty('ossrhPassword') ? "$System.env.SONATYPE_PASSWORD".trim() : "Unknown password"
+            }
+        }
+    }
+    
+    def projGroup = group
+
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                groupId = projGroup
+                name = 'TestJavaFX Core'
+                description = 'Testing support for JavaFX'
+                url = 'https://testjavafx.org/'
+                from components.java
+                licenses {
+                    license {
+                        name = 'EUPL Version 1.2'
+                        url = 'https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:eponymouse/TestJavaFX.git'
+                    developerConnection = 'scm:git:git@github.com:eponymouse/TestJavaFX.git'
+                    url = 'https://github.com/eponymouse/TestJavaFX/'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
 }

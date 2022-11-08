@@ -5,7 +5,7 @@ plugins {
 
 subprojects { subproject ->
     group 'com.eponymouse'
-    version '0.1'
+    version '0.1-SNAPSHOT'
 
     apply plugin: 'org.openjfx.javafxplugin'
 
