@@ -127,7 +127,7 @@ final class NodeQueryImpl implements NodeQuery
     @Override
     public <T extends Node> T queryWithRetry()
     {
-        return FxRobot.<T>impl_retryUntilPresent(this::tryQuery).orElse(null);
+        return FxRobot.<T>implRetryUntilPresent(this::tryQuery).orElse(null);
     }
 
     @Override

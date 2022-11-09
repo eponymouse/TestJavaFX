@@ -500,7 +500,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     // package-visible
-    static <R> Optional<R> impl_retryUntilPresent(Supplier<Optional<R>> supplier)
+    static <R> Optional<R> implRetryUntilPresent(Supplier<Optional<R>> supplier)
     {
         if (!Platform.isFxApplicationThread())
         {
@@ -528,7 +528,7 @@ public class FxRobot implements FxRobotInterface
                 Supplier<Optional<R>> r = () -> Optional.empty();
                 try
                 {
-                    Optional<R> val = impl_retryUntilPresent(supplier);
+                    Optional<R> val = implRetryUntilPresent(supplier);
                     r = () -> val;
                 }
                 catch (Throwable t)
@@ -549,7 +549,7 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobot retryUntil(BooleanSupplier check)
     {
-        if (impl_retryUntilPresent(() -> check.getAsBoolean() ? Optional.of("") : Optional.empty()).isEmpty())
+        if (implRetryUntilPresent(() -> check.getAsBoolean() ? Optional.of("") : Optional.empty()).isEmpty())
             throw new RuntimeException("retryUntil() condition was not satisfied even after retries");
         return this;
     }
