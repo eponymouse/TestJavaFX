@@ -53,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -518,8 +519,26 @@ public class FxRobot implements FxRobotInterface
         }
         else
         {
-            if (check.getAsBoolean())
-                return this;
+            // We suspend ourselves by entering a nested event loop, then spawn
+            // a new thread to call retryUntil:
+            final Object uniqueKey = new Object();
+            new Thread(() -> {
+                Supplier<FxRobot> r = () -> this;
+                try
+                {
+                    retryUntil(check);
+                }
+                catch (Throwable t)
+                {
+                    r = () -> {throw t;};
+                }
+                finally
+                {
+                    Supplier<FxRobot> rFinal = r;
+                    Platform.runLater(() -> Platform.exitNestedEventLoop(uniqueKey, rFinal));
+                }
+            }).start();
+            return ((Supplier<FxRobot>)Platform.enterNestedEventLoop(uniqueKey)).get();
         }
         throw new RuntimeException("retryUntil() condition was not satisfied even after retries");
     }

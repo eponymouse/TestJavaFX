@@ -13,6 +13,7 @@
  */
 package org.testjavafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import org.testjavafx.node.NodeQuery;
 
@@ -72,6 +73,12 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
     /**
      * Waits until the given supplier returns true, by repeatedly retrying
      * every 100ms for 8 seconds.
+     * 
+     * <p>If this method is run on the FX thread, it uses a nested event
+     * loop (see {@link Platform#enterNestedEventLoop(Object)}) in order
+     * to let the FX thread process events while we retry from another
+     * thread.  Without this, the retrying would do nothing because we'd
+     * block the FX thread, preventing any changes from happening.
      *
      * <p>If the condition still does not return true after all the retries,
      * a {@link RuntimeException} (or some subclass) will be thrown.  A
