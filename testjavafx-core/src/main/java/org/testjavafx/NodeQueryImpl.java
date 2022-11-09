@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  * called.
  */
 // package-visible
-class NodeQueryImpl implements NodeQuery
+final class NodeQueryImpl implements NodeQuery
 {
     /**
      * Gets the roots (really, the results) of the current query.
@@ -127,23 +127,7 @@ class NodeQueryImpl implements NodeQuery
     @Override
     public <T extends Node> T queryWithRetry()
     {
-        T t = query();
-        if (!Platform.isFxApplicationThread())
-        {
-            for (int retries = 50; t == null && retries >= 0; retries--)
-            {
-                try
-                {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                {
-                    // Just cancel the sleep, we'll go round and retry anyway
-                }
-                t = query();
-            }
-        }
-        return t;
+        return FxRobot.<T>implRetryUntilPresent(this::tryQuery).orElse(null);
     }
 
     @Override

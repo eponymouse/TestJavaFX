@@ -13,6 +13,7 @@
  */
 package org.testjavafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import org.testjavafx.node.NodeQuery;
 
@@ -71,7 +72,13 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
 
     /**
      * Waits until the given supplier returns true, by repeatedly retrying
-     * every 100ms for 8 seconds.
+     * every 100ms for 8 seconds.  The supplier is run on the FX thread.
+     * 
+     * <p>If this method is run on the FX thread, it uses a nested event
+     * loop (see {@link Platform#enterNestedEventLoop(Object)}) in order
+     * to let the FX thread process events while we retry from another
+     * thread.  Without this, the retrying would do nothing because we'd
+     * block the FX thread, preventing any changes from happening.
      *
      * <p>If the condition still does not return true after all the retries,
      * a {@link RuntimeException} (or some subclass) will be thrown.  A
@@ -82,7 +89,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @param check The check to run on the FX thread.
      * @return This, for easy chaining.
      */
-    public T waitUntil(BooleanSupplier check);
+    public T retryUntil(BooleanSupplier check);
 
     /**
      * An instant query (without retrying) for whether a node exists in a showing window.
@@ -110,7 +117,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
     public boolean isFocused(String query);
 
     /**
-     * Version of {@link #isShowing(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
+     * Version of {@link #isShowing(String)}  for use with {@link #retryUntil(BooleanSupplier)}.
      * For example:
      * 
      * <code>waitUntil(showing("Cancel"))</code>
@@ -121,7 +128,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
     public BooleanSupplier showing(String query);
 
     /**
-     * Version of {@link #isFocused(String)}  for use with {@link #waitUntil(BooleanSupplier)}.
+     * Version of {@link #isFocused(String)}  for use with {@link #retryUntil(BooleanSupplier)}.
      * For example:
      *
      * <code>waitUntil(focused("Cancel"))</code>
