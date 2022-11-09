@@ -46,6 +46,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -498,8 +499,8 @@ public class FxRobot implements FxRobotInterface
         });
     }
 
-    @Override
-    public FxRobot retryUntil(BooleanSupplier check)
+    // package-visible
+    static <R> Optional<R> impl_retryUntilPresent(Supplier<Optional<R>> supplier)
     {
         if (!Platform.isFxApplicationThread())
         {
@@ -513,8 +514,9 @@ public class FxRobot implements FxRobotInterface
                 {
                     // Just cancel the sleep, we'll go round and retry anyway
                 }
-                if (FxThreadUtils.syncFx(check::getAsBoolean))
-                    return this;
+                Optional<R> r = FxThreadUtils.syncFx(supplier::get);
+                if (r.isPresent())
+                    return r;
             }
         }
         else
@@ -523,10 +525,11 @@ public class FxRobot implements FxRobotInterface
             // a new thread to call retryUntil:
             final Object uniqueKey = new Object();
             new Thread(() -> {
-                Supplier<FxRobot> r = () -> this;
+                Supplier<Optional<R>> r = () -> Optional.empty();
                 try
                 {
-                    retryUntil(check);
+                    Optional<R> val = impl_retryUntilPresent(supplier);
+                    r = () -> val;
                 }
                 catch (Throwable t)
                 {
@@ -534,13 +537,21 @@ public class FxRobot implements FxRobotInterface
                 }
                 finally
                 {
-                    Supplier<FxRobot> rFinal = r;
+                    Supplier<Optional<R>> rFinal = r;
                     Platform.runLater(() -> Platform.exitNestedEventLoop(uniqueKey, rFinal));
                 }
             }).start();
-            return ((Supplier<FxRobot>)Platform.enterNestedEventLoop(uniqueKey)).get();
+            return ((Supplier<Optional<R>>)Platform.enterNestedEventLoop(uniqueKey)).get();
         }
-        throw new RuntimeException("retryUntil() condition was not satisfied even after retries");
+        return Optional.empty();
+    }
+
+    @Override
+    public FxRobot retryUntil(BooleanSupplier check)
+    {
+        if (impl_retryUntilPresent(() -> check.getAsBoolean() ? Optional.of("") : Optional.empty()).isEmpty())
+            throw new RuntimeException("retryUntil() condition was not satisfied even after retries");
+        return this;
     }
 
     @Override

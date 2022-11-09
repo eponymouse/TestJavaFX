@@ -72,7 +72,7 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
 
     /**
      * Waits until the given supplier returns true, by repeatedly retrying
-     * every 100ms for 8 seconds.
+     * every 100ms for 8 seconds.  The supplier is run on the FX thread.
      * 
      * <p>If this method is run on the FX thread, it uses a nested event
      * loop (see {@link Platform#enterNestedEventLoop(Object)}) in order

@@ -18,6 +18,7 @@ import org.testjavafx.FxRobot;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 /**
@@ -109,15 +110,16 @@ public interface NodeQuery
 
     /**
      * Like {@link #query()} but if no such node is found, it is retried every 100ms
-     * for 5 seconds.  Either the first found node in that period is returned,
-     * or null if there was still no such node after 5 seconds.
+     * for 8 seconds.  Either the first found node in that period is returned,
+     * or null if there was still no such node after 8 seconds.
      *
      * <p>This method is useful if you want to locate a node that may appear in
      * response to a GUI event that you just triggered, and you want to avoid
      * an arbitrary sleep to wait for the loading of the new GUI state.
      *
-     * <p>Note that the method is safe to call on the FX thread, but in that case
-     * it will not retry, it will instead act like calling query().
+     * <p>This method even retries if called on the FX thread, by using a nested
+     * event loop, like {@link FxRobot#retryUntil(BooleanSupplier)} and similar
+     * methods.
      *
      * @param <T> The desired/expected return type of the query.
      * @return The found node, cast unsafely to T, or null if nothing was found.
