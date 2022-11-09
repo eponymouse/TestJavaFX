@@ -136,7 +136,7 @@ public class NodeQueryTest extends ApplicationTest
         for (int i = 0; i < 10; i++)
         {
             long t = System.currentTimeMillis();
-            waitUntil(showing(".golden"));
+            retryUntil(showing(".golden"));
             t = System.currentTimeMillis() - t;
             MatcherAssert.assertThat("Loop " + i, t, Matchers.lessThan(2000L));
             sleep(1000);
@@ -149,7 +149,7 @@ public class NodeQueryTest extends ApplicationTest
         for (int i = 0; i < 10; i++)
         {
             long t = System.currentTimeMillis();
-            waitUntil(not(showing(".golden")));
+            retryUntil(not(showing(".golden")));
             t = System.currentTimeMillis() - t;
             MatcherAssert.assertThat("Loop " + i, t, Matchers.lessThan(2000L));
             sleep(1000);

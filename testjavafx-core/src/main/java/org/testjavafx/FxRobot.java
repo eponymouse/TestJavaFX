@@ -498,7 +498,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public FxRobot waitUntil(BooleanSupplier check)
+    public FxRobot retryUntil(BooleanSupplier check)
     {
         if (!Platform.isFxApplicationThread())
         {
@@ -521,7 +521,7 @@ public class FxRobot implements FxRobotInterface
             if (check.getAsBoolean())
                 return this;
         }
-        throw new RuntimeException("waitUntil() condition was not satisfied even after retries");
+        throw new RuntimeException("retryUntil() condition was not satisfied even after retries");
     }
 
     @Override
