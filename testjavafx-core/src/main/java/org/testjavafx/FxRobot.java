@@ -195,17 +195,22 @@ public class FxRobot implements FxRobotInterface
         if (focusedWindows.size() > 1)
         {
             // Hmm, we have multiple focused windows.  Need to work out which one has a focused node:
-            List<Window> windowsWithAFocusOwner = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
-            windowsWithAFocusOwner.removeIf(parent -> windowsWithAFocusOwner.stream().anyMatch(child -> isOwnerOf(child, parent)));
+            List<Window> windowsWithAFocusOwner = FxThreadUtils.<List<Window>>syncFx(() -> {
+                List<Window> ws = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
+                ws.removeIf(parent -> ws.stream().anyMatch(child -> isOwnerOf(child, parent)));
+                return ws;
+            });
+            
             if (windowsWithAFocusOwner.size() == 1)
-                focusedWindows = windowsWithAFocusOwner;
+                return windowsWithAFocusOwner.get(0);
             else if (windowsWithAFocusOwner.isEmpty())
                 return null;
             else // Just let it pick the first:
-                focusedWindows = windowsWithAFocusOwner;
+                return windowsWithAFocusOwner.get(0);
         }
-        // Guaranteed to be at least a size 1 list at this point:
-        return focusedWindows.get(0);
+        else
+            // Guaranteed to be at least a size 1 list at this point:
+            return focusedWindows.get(0);
     }
 
     @Override
