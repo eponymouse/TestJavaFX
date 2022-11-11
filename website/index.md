@@ -1,7 +1,4 @@
-TestJavaFX
-===
-
-Testing programs is a good idea, and modern Continuous Integration (CI) servers like Github Actions or Gitlab CI make it easy to run automated tests.  However, testing GUI program automatically is difficult.  Inspired by an earlier library, <a href="https://github.com/TestFX/TestFX">TestFX</a>, TestJavaFX uses a similar API to support testing <a href="https://openjfx.io/">JavaFX</a> programs.
+Testing programs is a good idea, and modern Continuous Integration (CI) servers like Github Actions or Gitlab CI make it easy to run automated tests.  However, testing GUI programs automatically can be difficult.  Inspired by an earlier library, <a href="https://github.com/TestFX/TestFX">TestFX</a>, TestJavaFX uses a similar API to support testing <a href="https://openjfx.io/">JavaFX</a> programs.
 
 For example, imagine you want to test writing in a couple of text fields and clicking OK:
 
@@ -27,13 +24,14 @@ Javadoc
 
 Running the tests headless
 ---
-By default tests run in headed mode, meaning they run live on your screen and control your keyboard and mouse.  **This is dangerous!**  If a notification pops up, TestJavaFX could click on it and type text into the response.  You probably want to run your tests headless.  (My favourite example of this is a failed test for deleting text that missed the window and clicked on my IDE, pressed Ctrl-A and deleted the source code for that test.  Revenge!)
+By default tests run in *headed* mode, meaning they run live on your screen and control your keyboard and mouse.  **This is dangerous!**  If a notification pops up, TestJavaFX could click on it and type text into the response.  (My favourite example of this is a failed test for deleting text that missed the window and clicked on my IDE, pressed Ctrl-A and deleted the source code for that test.  Revenge!)  You probably want to run your tests *headless*.  
+
 There are several ways to run the tests headless, described on other pages:
 
- - <a href="{% link running-with-xvfb.md %}">Running headless on Linux (incl. Github Actions) using Xvfb (and recording a video of the test)</a>.
- - <a href="{% link running-with-monocle.md %}">Running headless using the Monocle libraries</a>.
+ - <a href="{% link running-with-xvfb.md %}">Running headless on Linux using Xvfb (and recording a video of the test)</a>.
+ - <a href="{% link running-with-monocle.md %}">Running headless on any OS using the Monocle libraries</a>.
 
-I especially recommend the first option on Linux as the video is very useful for debugging test failures.
+I especially **recommend the first option on Linux (including CI tasks)** as the video is very useful for debugging test failures.
 
 Integrating with test frameworks (JUnit, etc)
 ---
