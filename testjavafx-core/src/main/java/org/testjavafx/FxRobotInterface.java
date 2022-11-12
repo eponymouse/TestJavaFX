@@ -47,34 +47,6 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
     public FxRobotInterface sleep(int milliseconds);
 
     /**
-     * Gets our best guess at the current target window.  Due to
-     * the implementation of JavaFX, especially with Monocle, it is
-     * possible that there are multiple focused windows.  This usually
-     * occurs because one window is showing child dialogs and/or popups
-     * (and those might show further dialogs, etc).  We do our best to
-     * traverse the window hierarchy and work out which window actually
-     * has focus based on it being focused and having a focus owner.  However
-     * it is possible this method might return a popup child or parent
-     * dialog that is the incorrect window.  If you want more control
-     * you may want to call {@link #focusedWindows()} and resolve the case
-     * yourself where there are multiple focused windows.
-     *
-     * @return Null if no windows are focused, otherwise the best guess at the current focused window.
-     */
-    public Window targetWindow() throws RuntimeException;
-
-    /**
-     * Like {@link #targetWindow()} but in cases where that method
-     * would return null or make a best guess, this method throws a
-     * descriptive exception instead.
-     *
-     * @return The focused window if there is a single clear candidate.
-     * @throws RuntimeException If there are multiple focused windows that cannot be distinguished, or no window has focus.
-     */
-    public Window targetWindowOrThrow() throws RuntimeException;
-
-
-    /**
      * Gets the centre of the given Node's bounds as
      * a coordinate on the screen.
      *
