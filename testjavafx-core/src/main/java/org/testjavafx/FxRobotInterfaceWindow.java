@@ -14,6 +14,7 @@
 package org.testjavafx;
 
 import javafx.stage.Window;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.node.NodeQuery;
 
 import java.util.List;
@@ -114,7 +115,7 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
      *
      * @return Null if no windows are focused, otherwise the best guess at the current focused window.
      */
-    public Window targetWindow();
+    public @Nullable Window targetWindow();
 
     /**
      * Like {@link #targetWindow()} but in cases where that method

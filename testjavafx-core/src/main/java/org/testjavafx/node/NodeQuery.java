@@ -14,6 +14,7 @@
 package org.testjavafx.node;
 
 import javafx.scene.Node;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.FxRobot;
 
 import java.util.Optional;
@@ -48,7 +49,7 @@ public interface NodeQuery
      * @param <T> The type to cast the result to (use Node if you don't want this cast)
      * @return The first Node found or null if no nodes are found.
      */
-    public <T extends Node> T query();
+    public <T extends Node> @Nullable T query();
 
     /**
      * Finds all the instances of Node that match this query, unsafely
@@ -124,7 +125,7 @@ public interface NodeQuery
      * @param <T> The desired/expected return type of the query.
      * @return The found node, cast unsafely to T, or null if nothing was found.
      */
-    public <T extends Node> T queryWithRetry();
+    public <T extends Node> @Nullable T queryWithRetry();
 
     /**
      * Filters the current results (without searching any further for new results)

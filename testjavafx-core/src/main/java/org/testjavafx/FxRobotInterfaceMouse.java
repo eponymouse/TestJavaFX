@@ -174,7 +174,7 @@ public interface FxRobotInterfaceMouse<T extends FxRobotInterfaceMouse<T>>
 
     /**
      * Moves to the centre of the result of the query using the given
-     * {@link Motion}.
+     * {@link Motion}.  If no such node is found, an exception is thrown
      *
      * <p>Can be called from any thread.  Will call {@link FxThreadUtils#waitForFxEvents()}
      * after moving.

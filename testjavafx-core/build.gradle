@@ -3,9 +3,20 @@ plugins {
     id 'maven-publish'
     id 'signing'
 }
+apply plugin: 'org.checkerframework'
+
 dependencies {
+    api 'org.checkerframework:checker-qual:3.27.0'
+    checkerFramework 'org.checkerframework:checker:3.27.0'
+
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+checkerFramework {
+    checkers = [
+            'org.checkerframework.checker.nullness.NullnessChecker'
+    ]
 }
 
 java {

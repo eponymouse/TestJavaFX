@@ -16,6 +16,7 @@ package org.testjavafx;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -47,7 +48,7 @@ public class FxThreadUtils
      * Executes all the tasks on the FX thread.
      * Monotonic non-null.  Only access using the getter
      */
-    private static ExecutorService fxExecutor;
+    private static @MonotonicNonNull ExecutorService fxExecutor;
 
     /** Keep track of whether the dummy app has been launched. */
     private static final AtomicBoolean dummyAppLaunched = new AtomicBoolean(false);

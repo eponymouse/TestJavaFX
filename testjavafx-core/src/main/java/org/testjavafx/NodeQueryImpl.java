@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.text.Text;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.node.NodeQuery;
 
 import java.util.Collections;
@@ -92,9 +93,9 @@ final class NodeQueryImpl implements NodeQuery
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Node> T query()
+    public <T extends Node> @Nullable T query()
     {
-        return FxThreadUtils.syncFx(() -> {
+        return FxThreadUtils.<@Nullable T>syncFx(() -> {
             ImmutableList<Node> roots = allRoots.get();
             return roots.isEmpty() ? null : (T)roots.get(0);
         });
@@ -124,7 +125,7 @@ final class NodeQueryImpl implements NodeQuery
     }
 
     @Override
-    public <T extends Node> T queryWithRetry()
+    public <T extends Node> @Nullable T queryWithRetry()
     {
         return FxRobot.<T>implRetryUntilPresent(this::tryQuery).orElse(null);
     }
