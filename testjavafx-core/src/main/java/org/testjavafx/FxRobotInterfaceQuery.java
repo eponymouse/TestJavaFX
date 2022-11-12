@@ -112,6 +112,8 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * already does exactly that.
      *
      * @param check The check to run on the FX thread.
+     * @param <R> The return type that will be returned by the supplier 
+     *           (and then returned by this method if non-null)
      * @return This, for easy chaining.
      */
     public <R> R retryUntilNonNull(Supplier<R> check);
@@ -135,6 +137,8 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * already does exactly that.
      *
      * @param check The check to run on the FX thread.
+     * @param <R> The return type that will be returned by the supplier in an optional 
+     *            (and then returned by this method if present)
      * @return This, for easy chaining.
      */
     public <R> R retryUntilPresent(Supplier<Optional<R>> check);
