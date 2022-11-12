@@ -19,9 +19,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.testjavafx.FxThreadUtils;
 import org.testjavafx.junit4.ApplicationTest;
+
+import java.util.Optional;
 
 public class RetryTest extends ApplicationTest
 {
@@ -61,5 +66,104 @@ public class RetryTest extends ApplicationTest
             // Sleep an awkward amount of time to end up somewhere else in the animation loop:
             sleep(1234);
         }
+    }
+
+    @Test
+    public void retryFromOffThread2()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            this.retryUntilPresent(() -> lookup(".present").tryQuery());
+            // Sleep an awkward amount of time to end up somewhere else in the animation loop:
+            sleep(1234);
+        }
+    }
+
+    @Test
+    public void retryOnThread2()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            FxThreadUtils.syncFx(() -> this.retryUntilPresent(() -> lookup(".present").tryQuery()));
+            // Sleep an awkward amount of time to end up somewhere else in the animation loop:
+            sleep(1234);
+        }
+    }
+
+    @Test
+    public void retryFromOffThread3()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            this.retryUntilNonNull(() -> lookup(".present").query());
+            // Sleep an awkward amount of time to end up somewhere else in the animation loop:
+            sleep(1234);
+        }
+    }
+
+    @Test
+    public void retryOnThread3()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            FxThreadUtils.syncFx(() -> this.retryUntilNonNull(() -> lookup(".present").query()));
+            // Sleep an awkward amount of time to end up somewhere else in the animation loop:
+            sleep(1234);
+        }
+    }
+
+    private void checkTimingAndException(Runnable r)
+    {
+        long start = System.currentTimeMillis();
+        try
+        {
+            r.run();
+            Assert.fail("No exception from failed retry");
+        }
+        catch (RuntimeException e)
+        {
+            long end = System.currentTimeMillis();
+            MatcherAssert.assertThat((end - start), Matchers.allOf(Matchers.greaterThanOrEqualTo(8000L), Matchers.lessThanOrEqualTo(10000L)));
+        }
+        catch (Throwable t)
+        {
+            Assert.fail("Unexpected exception type: " + t);
+        }
+    }
+    
+    @Test
+    public void retryFail1a()
+    {
+        checkTimingAndException(() -> retryUntil(() -> false));
+    }
+
+    @Test
+    public void retryFail1b()
+    {
+        checkTimingAndException(() -> retryUntilNonNull(() -> null));
+    }
+
+    @Test
+    public void retryFail1c()
+    {
+        checkTimingAndException(() -> retryUntilPresent(() -> Optional.empty()));
+    }
+
+    @Test
+    public void retryFail2a()
+    {
+        checkTimingAndException(() -> FxThreadUtils.syncFx(() -> retryUntil(() -> false)));
+    }
+
+    @Test
+    public void retryFail2b()
+    {
+        checkTimingAndException(() -> FxThreadUtils.syncFx(() -> retryUntilNonNull(() -> null)));
+    }
+
+    @Test
+    public void retryFail2c()
+    {
+        checkTimingAndException(() -> FxThreadUtils.syncFx(() -> retryUntilPresent(() -> Optional.empty())));
     }
 }

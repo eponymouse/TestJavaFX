@@ -15,7 +15,6 @@ package org.testjavafx;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
