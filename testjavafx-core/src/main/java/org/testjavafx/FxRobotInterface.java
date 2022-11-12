@@ -16,6 +16,7 @@ package org.testjavafx;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Window;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * The main interface with all the methods available to
@@ -74,6 +75,6 @@ public interface FxRobotInterface extends FxRobotInterfaceKeyboard<FxRobotInterf
      * @return The centre (screen position) of the first found node's bounds, or null
      *         if no such node is found.
      */
-    public Point2D point(String query);
+    public @Nullable Point2D point(String query);
 
 }

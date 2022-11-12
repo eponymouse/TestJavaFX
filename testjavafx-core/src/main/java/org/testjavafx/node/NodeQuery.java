@@ -14,6 +14,7 @@
 package org.testjavafx.node;
 
 import javafx.scene.Node;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.FxRobot;
 
 import java.util.Optional;
@@ -35,6 +36,12 @@ import java.util.function.Predicate;
  * the same (but modified) object for chaining, but here a new NodeQuery object is
  * returned that represents the modified search.  NodeQuery in this TestJavaFX library
  * is immutable and can be re-run many times.
+ *
+ * <p>Note that some methods in this class are annotated @Nullable from
+ * <a href="https://checkerframework.org/">The Checker Framework</a>.  If you
+ * use this, you can take advantage of the annotations.  If you do not use this,
+ * consider it extra documentation: anything marked with a @Nullable return may
+ * return null; anything else will not.
  */
 public interface NodeQuery
 {
@@ -48,7 +55,7 @@ public interface NodeQuery
      * @param <T> The type to cast the result to (use Node if you don't want this cast)
      * @return The first Node found or null if no nodes are found.
      */
-    public <T extends Node> T query();
+    public <T extends Node> @Nullable T query();
 
     /**
      * Finds all the instances of Node that match this query, unsafely
@@ -124,7 +131,7 @@ public interface NodeQuery
      * @param <T> The desired/expected return type of the query.
      * @return The found node, cast unsafely to T, or null if nothing was found.
      */
-    public <T extends Node> T queryWithRetry();
+    public <T extends Node> @Nullable T queryWithRetry();
 
     /**
      * Filters the current results (without searching any further for new results)

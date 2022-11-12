@@ -18,4 +18,5 @@ module org.testjavafx.core {
     requires javafx.controls;
     requires javafx.graphics;
     requires org.apache.commons.lang3;
+    requires static org.checkerframework.checker.qual;
 }

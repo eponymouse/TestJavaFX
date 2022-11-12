@@ -14,6 +14,7 @@
 package org.testjavafx;
 
 import javafx.stage.Window;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.node.NodeQuery;
 
 import java.util.List;
@@ -32,6 +33,12 @@ import java.util.List;
  * instead of the targetWindow() call to get the currently focused window.
  * If you want to target a specific window, use the {@link #from(Window)} call
  * to begin the query.
+ *
+ * <p>Note that some methods in this class are annotated @Nullable from
+ * <a href="https://checkerframework.org/">The Checker Framework</a>.  If you
+ * use this, you can take advantage of the annotations.  If you do not use this,
+ * consider it extra documentation: anything marked with a @Nullable return may
+ * return null; anything else will not.
  *
  * @param <T> The type of this object to be returned from all the methods.
  *            This will be {@link FxRobotInterface} if you use these methods via
@@ -114,7 +121,7 @@ public interface FxRobotInterfaceWindow<T extends FxRobotInterfaceWindow<T>>
      *
      * @return Null if no windows are focused, otherwise the best guess at the current focused window.
      */
-    public Window targetWindow();
+    public @Nullable Window targetWindow();
 
     /**
      * Like {@link #targetWindow()} but in cases where that method

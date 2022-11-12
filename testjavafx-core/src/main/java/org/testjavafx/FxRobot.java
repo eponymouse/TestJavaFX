@@ -36,6 +36,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import org.apache.commons.lang3.SystemUtils;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testjavafx.node.NodeQuery;
 
 import java.lang.ref.WeakReference;
@@ -91,7 +93,7 @@ public class FxRobot implements FxRobotInterface
     private final Set<MouseButton> pressedButtons = EnumSet.noneOf(MouseButton.class);
 
     /** The last window that was focused.  Only read/modified on FX thread. */
-    private WeakReference<ImmutableList<Window>> lastFocusedWindows = null;
+    private @MonotonicNonNull WeakReference<ImmutableList<Window>> lastFocusedWindows = null;
 
     /**
      * Construct a new instance.  This can either be called on the FX thread
@@ -178,6 +180,8 @@ public class FxRobot implements FxRobotInterface
     private Scene getFocusedSceneForWriting()
     {
         Window targetWindow = targetWindow();
+        if (targetWindow == null)
+            throw new IllegalStateException("No focused window");
         Scene scene = targetWindow.getScene();
         if (scene == null)
             throw new IllegalStateException("Focused window " + targetWindow + " has a null Scene");
@@ -185,7 +189,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public Window targetWindow()
+    public @Nullable Window targetWindow()
     {
         List<Window> focusedWindows = focusedWindows();
         // We could just return but if the user meant to write, they meant to write:
@@ -436,7 +440,11 @@ public class FxRobot implements FxRobotInterface
     @Override
     public FxRobot moveTo(String query, Motion motion)
     {
-        return moveTo(point(query), motion);
+        Point2D point = point(query);
+        if (point != null)
+            return moveTo(point, motion);
+        else
+            throw new IllegalStateException("No node matching \"" + query + "\" found.");
     }
 
     @Override
@@ -655,7 +663,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     // Only call on FX thread
-    private Window retrieveOwnerOf(Window window)
+    private @Nullable Window retrieveOwnerOf(Window window)
     {
         if (window instanceof Stage)
         {
@@ -707,7 +715,7 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
-    public Point2D point(String query)
+    public @Nullable Point2D point(String query)
     {
         Node node = lookup(query).queryWithRetry();
         if (node == null)
