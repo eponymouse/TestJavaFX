@@ -17,8 +17,10 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import org.testjavafx.node.NodeQuery;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Methods for querying the scene graph. 
@@ -90,6 +92,56 @@ public interface FxRobotInterfaceQuery<T extends FxRobotInterfaceQuery<T>>
      * @return This, for easy chaining.
      */
     public T retryUntil(BooleanSupplier check);
+
+    /**
+     * Waits until the given supplier returns a non-null value, by repeatedly retrying
+     * every 100ms for 8 seconds.
+     *
+     * <p>If this method is run on the FX thread, it uses a nested event
+     * loop (see {@link Platform#enterNestedEventLoop(Object)}) in order
+     * to let the FX thread process events while we retry from another
+     * thread.  Without this, the retrying would do nothing because we'd
+     * block the FX thread, preventing any changes from happening.
+     *
+     * <p>If the condition still does not return non-null after all the retries,
+     * a {@link RuntimeException} (or some subclass) will be thrown.  A
+     * return without exception will therefore be non-null.
+     *
+     * <p>Useful suppliers include methods like {@link NodeQuery#query()},
+     * although in that particular case {@link NodeQuery#queryWithRetry()}
+     * already does exactly that.
+     *
+     * @param check The check to run on the FX thread.
+     * @param <R> The return type that will be returned by the supplier 
+     *           (and then returned by this method if non-null)
+     * @return This, for easy chaining.
+     */
+    public <R> R retryUntilNonNull(Supplier<R> check);
+
+    /**
+     * Waits until the given supplier returns a present (non-empty) Optional value,
+     * by repeatedly retrying every 100ms for 8 seconds.
+     *
+     * <p>If this method is run on the FX thread, it uses a nested event
+     * loop (see {@link Platform#enterNestedEventLoop(Object)}) in order
+     * to let the FX thread process events while we retry from another
+     * thread.  Without this, the retrying would do nothing because we'd
+     * block the FX thread, preventing any changes from happening.
+     *
+     * <p>If the condition still does not return non-empty after all the retries,
+     * a {@link RuntimeException} (or some subclass) will be thrown.  A
+     * return without exception will therefore be non-null.
+     *
+     * <p>Useful suppliers include methods like {@link NodeQuery#tryQuery()},
+     * although in that particular case {@link NodeQuery#queryWithRetry()}
+     * already does exactly that.
+     *
+     * @param check The check to run on the FX thread.
+     * @param <R> The return type that will be returned by the supplier in an optional 
+     *            (and then returned by this method if present)
+     * @return This, for easy chaining.
+     */
+    public <R> R retryUntilPresent(Supplier<Optional<R>> check);
 
     /**
      * An instant query (without retrying) for whether a node exists in a showing window.

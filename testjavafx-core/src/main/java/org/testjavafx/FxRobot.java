@@ -560,6 +560,20 @@ public class FxRobot implements FxRobotInterface
     }
 
     @Override
+    public <R> R retryUntilNonNull(Supplier<R> check)
+    {
+        Optional<R> r = implRetryUntilPresent(() -> Optional.ofNullable(check.get()));
+        return r.orElseThrow(() -> new RuntimeException("retryUntilNonNull() returned null even after retries"));
+    }
+
+    @Override
+    public <R> R retryUntilPresent(Supplier<Optional<R>> check)
+    {
+        Optional<R> r = implRetryUntilPresent(() -> check.get());
+        return r.orElseThrow(() -> new RuntimeException("retryUntilPresent() returned empty even after retries"));
+    }
+
+    @Override
     public boolean isShowing(String query)
     {
         return lookup(query).query() != null;
