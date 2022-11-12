@@ -123,7 +123,7 @@ public class RetryTest extends ApplicationTest
         catch (RuntimeException e)
         {
             long end = System.currentTimeMillis();
-            MatcherAssert.assertThat((end - start), Matchers.allOf(Matchers.greaterThanOrEqualTo(8000L), Matchers.lessThanOrEqualTo(10000L)));
+            MatcherAssert.assertThat((end - start), Matchers.allOf(Matchers.greaterThanOrEqualTo(8000L), Matchers.lessThanOrEqualTo(12000L)));
         }
         catch (Throwable t)
         {
