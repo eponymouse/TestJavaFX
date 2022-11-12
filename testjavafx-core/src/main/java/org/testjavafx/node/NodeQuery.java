@@ -36,6 +36,12 @@ import java.util.function.Predicate;
  * the same (but modified) object for chaining, but here a new NodeQuery object is
  * returned that represents the modified search.  NodeQuery in this TestJavaFX library
  * is immutable and can be re-run many times.
+ *
+ * <p>Note that some methods in this class are annotated @Nullable from
+ * <a href="https://checkerframework.org/">The Checker Framework</a>.  If you
+ * use this, you can take advantage of the annotations.  If you do not use this,
+ * consider it extra documentation: anything marked with a @Nullable return may
+ * return null; anything else will not.
  */
 public interface NodeQuery
 {

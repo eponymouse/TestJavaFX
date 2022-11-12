@@ -34,6 +34,12 @@ import java.util.List;
  * If you want to target a specific window, use the {@link #from(Window)} call
  * to begin the query.
  *
+ * <p>Note that some methods in this class are annotated @Nullable from
+ * <a href="https://checkerframework.org/">The Checker Framework</a>.  If you
+ * use this, you can take advantage of the annotations.  If you do not use this,
+ * consider it extra documentation: anything marked with a @Nullable return may
+ * return null; anything else will not.
+ *
  * @param <T> The type of this object to be returned from all the methods.
  *            This will be {@link FxRobotInterface} if you use these methods via
  *            {@link FxRobotInterface} or {@link FxRobot}.
