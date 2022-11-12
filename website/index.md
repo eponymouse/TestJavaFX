@@ -1,4 +1,4 @@
-Testing programs is a good idea, and modern Continuous Integration (CI) servers like Github Actions or Gitlab CI make it easy to run automated tests.  However, testing GUI programs automatically can be difficult.  Inspired by an earlier library, <a href="https://github.com/TestFX/TestFX">TestFX</a>, TestJavaFX uses a similar API to support testing <a href="https://openjfx.io/">JavaFX</a> programs.
+Testing programs is a good idea, and modern Continuous Integration (CI) servers like Github Actions or Gitlab CI make it easy to run automated tests.  However, testing GUI programs automatically can be difficult.  Inspired by an earlier library, <a href="https://github.com/TestFX/TestFX">TestFX</a>, TestJavaFX uses a similar API to support testing <a href="https://openjfx.io/">JavaFX</a> programs.  It allows you to fake mouse clicks and key presses in order to test the functionality of a GUI.
 
 For example, imagine you want to test writing in a couple of text fields and clicking OK:
 
