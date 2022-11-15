@@ -27,6 +27,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -199,8 +200,8 @@ public class FxRobot implements FxRobotInterface
         if (focusedWindows.size() > 1)
         {
             // Hmm, we have multiple focused windows.  Need to work out which one has a focused node:
-            List<Window> windowsWithAFocusOwner = FxThreadUtils.<List<Window>>syncFx(() -> {
-                List<Window> ws = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
+            ArrayList<Window> windowsWithAFocusOwner = FxThreadUtils.<ArrayList<Window>>syncFx(() -> {
+                ArrayList<Window> ws = new ArrayList<>(focusedWindows.stream().filter(w -> w.getScene() != null && w.getScene().getFocusOwner() != null && w.getScene().getFocusOwner().isFocused()).collect(Collectors.toList()));
                 ws.removeIf(parent -> ws.stream().anyMatch(child -> isOwnerOf(child, parent)));
                 return ws;
             });
@@ -209,8 +210,21 @@ public class FxRobot implements FxRobotInterface
                 return windowsWithAFocusOwner.get(0);
             else if (windowsWithAFocusOwner.isEmpty())
                 return null;
-            else // Just let it pick the first:
+            else 
+            {
+                // This can happen in cases like you open a context menu, select an item
+                // and it shows a dialog.  In Monocle the context menu (a popup window)
+                // still counts as focused, the dialog is focused, but they do not
+                // have a direct parent-child relation (they have a common ancestor
+                // in the window that showed them, assuming the dialog has its owner
+                // set correctly).
+                
+                // It's hard to think of an exact rule for a general case but we handle this
+                // specific case by deprioritising context menu:
+                Collections.sort(windowsWithAFocusOwner, Comparator.comparing(w -> w instanceof ContextMenu ? 1 : 0));
+
                 return windowsWithAFocusOwner.get(0);
+            }
         }
         else
             // Guaranteed to be at least a size 1 list at this point:
