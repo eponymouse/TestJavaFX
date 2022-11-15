@@ -12,10 +12,10 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
@@ -43,7 +43,7 @@ public class MenuDialogTest extends ApplicationTest
     {
         super.start(primaryStage);
         parent = primaryStage;
-        parentButton = new Button();
+        parentButton = new Button("Click me");
         MenuItem open = new MenuItem("Open");
         open.setOnAction(e -> {
             TextInputDialog textInputDialog = new TextInputDialog();
@@ -51,11 +51,13 @@ public class MenuDialogTest extends ApplicationTest
             textInputDialog.getEditor().getStyleClass().add("fake-file-chooser-dialog");
             if (parent != null)
                 textInputDialog.initOwner(parent);
+            textInputDialog.setOnShown(ev -> Platform.runLater(() -> textInputDialog.getEditor().requestFocus()));
             result.set(textInputDialog.showAndWait().orElse(null));
         });
-        Menu menu = new Menu("Main", null, open);
+        parentButton.setOnAction(e -> {
+            new ContextMenu(open).show(parentButton, 0, 0);
+        });
         BorderPane root = new BorderPane(parentButton);
-        root.setTop(new MenuBar(menu));
         parent.setScene(new Scene(root));
         parent.show();
     }
@@ -73,7 +75,7 @@ public class MenuDialogTest extends ApplicationTest
 
     private void openMenu()
     {
-        clickOn("Main").moveTo("Open", Motion.VERTICAL_FIRST).clickOn();
+        clickOn("Click me").moveTo("Open", Motion.HORIZONTAL_FIRST).clickOn();
     }
 
     @Test
