@@ -99,6 +99,13 @@ public interface NodeQuery
      * satisfy the given predicate.  If you want to just filter the results without this
      * descent, use filter() instead.
      *
+     * <p>The predicate will always be run on the FX thread.
+     *
+     * <p>Note that if you use the retry functionality of {@link #queryWithRetry()},
+     * this method may be called multiple times with the same node during the retries.
+     * It is highly recommended that the predicate be stateless, or at least capable
+     * of being re-run arbitrarily.
+     *
      * @param nodePredicate The predicate that nodes must match.
      * @return A new NodeQuery object representing this new search.  Note that the
      *         current object is unmodified and you must use the return value if you
@@ -136,6 +143,13 @@ public interface NodeQuery
     /**
      * Filters the current results (without searching any further for new results)
      * to only retain those that match the given predicate.
+     *
+     * <p>The predicate will always be run on the FX thread.
+     *
+     * <p>Note that if you use the retry functionality of {@link #queryWithRetry()},
+     * this method may be called multiple times with the same node during the retries.
+     * It is highly recommended that the predicate be stateless, or at least capable
+     * of being re-run arbitrarily. 
      *
      * @param nodePredicate Only nodes that return true from this predicate will be retained
      * @return A new NodeQuery object representing the filtered search.  Note that the

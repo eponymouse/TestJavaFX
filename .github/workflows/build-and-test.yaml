@@ -19,12 +19,12 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install xvfb ffmpeg icewm
+          sudo apt-get install xvfb ffmpeg sawfish
       - name: Start Xvfb and recording
         run: |
           Xvfb :42 -screen 0 1920x1200x24 &
           sleep 5
-          DISPLAY=:42.0 icewm &
+          sawfish --display :42.0 &
           ffmpeg -nostdin -y -video_size 1920x1200 -framerate 8 -f x11grab -i :42.0 -codec:v libx264rgb -preset ultrafast recording.mp4 > ffmpeg.log 2>&1 &
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@859c33240bd026ce8d5f711f5adcc65c2f8eafc1
@@ -41,7 +41,7 @@ jobs:
           sleep 5
       - name: Stop Xvfb
         run: |
-          killall icewm
+          killall sawfish
           killall Xvfb
       - name: Test headless with Gradle
         uses: gradle/gradle-build-action@0842a550d10f5211be8c8295f6888889e1fca291

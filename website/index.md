@@ -11,6 +11,8 @@ For example, imagine you want to test writing in a couple of text fields and cli
 
 For more methods, see the core <a href="/latest-testjavafx-core/org.testjavafx.core/org/testjavafx/FxRobot.html">FxRobot</a> class.
 
+For some example tests, see the <a href="https://github.com/eponymouse/TestJavaFX/blob/main/internal-test-junit4/src/test/java/ClickTest.java">ClickTest</a> and <a href="https://github.com/eponymouse/TestJavaFX/blob/main/internal-test-junit4/src/test/java/TypingTest.java">TypingTest</a> classes in the Github repository.
+
 Add dependency
 ---
 
@@ -19,8 +21,8 @@ TODO Gradle/Maven once released
 Javadoc
 ---
 
- * <a href="/latest-testjavafx-core/">Core module</a>
- * <a href="/latest-testjavafx-junit4/">JUnit 4 module</a>
+ * Javadoc for the <a href="/latest-testjavafx-core/">Core module</a> containing most of the TestJavaFX API.
+ * Javadoc for the <a href="/latest-testjavafx-junit4/">JUnit 4 module</a> containing a helper class to extend for writing JUnit 4 tests.
 
 Running the tests headless
 ---
@@ -32,11 +34,6 @@ There are several ways to run the tests headless, described on other pages:
  - <a href="{% link running-with-monocle.md %}">Running headless on any OS using the Monocle libraries</a>.
 
 I especially **recommend the first option on Linux (including CI tasks)** as the video is very useful for debugging test failures.
-
-Integrating with test frameworks (JUnit, etc)
----
-
-TODO
 
 Comparison to TestFX
 ---
