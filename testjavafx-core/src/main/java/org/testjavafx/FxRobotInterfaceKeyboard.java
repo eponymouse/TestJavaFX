@@ -51,6 +51,13 @@ public interface FxRobotInterfaceKeyboard<T extends FxRobotInterfaceKeyboard<T>>
      * them all in reverse order, then calls
      * {@link FxThreadUtils#waitForFxEvents()}.
      *
+     * <p>If you pass {@link KeyCode#SHORTCUT} as a KeyCode,
+     * this will map to {@link KeyCode#COMMAND} on Mac, and
+     * {@link KeyCode#CONTROL} on other operating systems, so you
+     * can perform a cross-platform copy command (for example)
+     * by calling this method with:
+     * <code>tap(KeyCode.SHORTCUT, KeyCode.C);</code>
+     *
      * @param keyCodes The key codes to press then release.
      * @return This object, for easy chaining of methods.
      */
